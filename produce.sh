@@ -21,7 +21,7 @@
 set -e
 
 cd "$(dirname "$0")"
-SRC="src/StickFigureEconomics"
+SRC="src/JuknaraBriefing"
 PUBLIC="public"
 
 # 색상
@@ -121,10 +121,10 @@ log "Step 5/5: 영상 렌더링 (Remotion)"
 # Remotion Studio가 떠있으면 죽이기
 lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 
-OUTPUT_FILE="out/StickFigureEconomics.mp4"
+OUTPUT_FILE="out/JuknaraBriefing.mp4"
 mkdir -p out
 
-npx remotion render StickFigureEconomics "$OUTPUT_FILE" \
+npx remotion render JuknaraBriefing "$OUTPUT_FILE" \
   --codec h264 \
   --concurrency 50%
 

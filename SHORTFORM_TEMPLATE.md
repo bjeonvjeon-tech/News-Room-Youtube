@@ -5,7 +5,7 @@
 ### Step 1: 새 폴더 생성
 ```bash
 cd "/Users/bjeonvjeon/Remotion Video Folder/my-video/src"
-cp -r StickFigureEconomics NewProjectName
+cp -r JuknaraBriefing NewProjectName
 ```
 
 ### Step 2: 캐릭터 & 스타일 수정

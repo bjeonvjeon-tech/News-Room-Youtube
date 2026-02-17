@@ -245,7 +245,7 @@ function getChapterForClip(
   return SCRIPT_SHORT[SCRIPT_SHORT.length - 1];
 }
 
-export const CyberpunkTechNewsShort: React.FC = () => {
+export const JuknaraBriefingTechNewsShort: React.FC = () => {
   if (CLIPS.length === 0) {
     // Fallback: clips-short.json이 없으면 placeholder
     return (

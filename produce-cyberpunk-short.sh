@@ -10,7 +10,7 @@
 #   - 오디오: public/audio/full_narration_short.mp3
 #   - 이미지: public/images-short/
 #   - 클립 비디오: public/videos/clips-short/
-#   - 출력: out/CyberpunkTechNewsShort.mp4
+#   - 출력: out/JuknaraBriefingTechNewsShort.mp4
 #
 # 사용법:
 #   ./produce-cyberpunk-short.sh              (전체 파이프라인)
@@ -33,7 +33,7 @@
 set -e
 
 cd "$(dirname "$0")"
-SRC="src/CyberpunkTechNews"
+SRC="src/JuknaraBriefingTechNews"
 PUBLIC="public"
 
 # 색상
@@ -97,8 +97,8 @@ if [ "$RENDER_ONLY" = false ]; then
     sed -i '' "s/const SCENE_DUR = [0-9]*/const SCENE_DUR = ${SCENE_DUR}/" "$SRC/script-short.ts"
   fi
 
-  # Root.tsx 숏폼 프레임 업데이트 (CyberpunkTechNewsShort의 durationInFrames)
-  sed -i '' "/CyberpunkTechNewsShort/,/\/>/{s/durationInFrames={[0-9]*}/durationInFrames={${TOTAL_FRAMES}}/;}" "src/Root.tsx"
+  # Root.tsx 숏폼 프레임 업데이트 (JuknaraBriefingTechNewsShort의 durationInFrames)
+  sed -i '' "/JuknaraBriefingTechNewsShort/,/\/>/{s/durationInFrames={[0-9]*}/durationInFrames={${TOTAL_FRAMES}}/;}" "src/Root.tsx"
 
   ok "프레임 보정 완료: ${TOTAL_FRAMES} frames (${DURATION_INT}초)"
 
@@ -130,10 +130,10 @@ log "Step 7/7: 영상 렌더링 (Remotion, 1080x1920)"
 # Remotion Studio가 떠있으면 죽이기
 lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 
-OUTPUT_FILE="out/CyberpunkTechNewsShort.mp4"
+OUTPUT_FILE="out/JuknaraBriefingTechNewsShort.mp4"
 mkdir -p out
 
-npx remotion render CyberpunkTechNewsShort "$OUTPUT_FILE" \
+npx remotion render JuknaraBriefingTechNewsShort "$OUTPUT_FILE" \
   --codec h264 \
   --concurrency 50%
 

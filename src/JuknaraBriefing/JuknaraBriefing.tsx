@@ -76,7 +76,7 @@ function getClipVideoForChapter(
   return `videos/clips/${matchingClip.id}.mp4`;
 }
 
-export const StickFigureEconomics: React.FC = () => {
+export const JuknaraBriefing: React.FC = () => {
   // 챕터별 시작 프레임 계산
   let accumulatedFrames = 0;
 

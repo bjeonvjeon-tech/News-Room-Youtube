@@ -13,12 +13,12 @@ import { useEffect, useState } from "react";
 import { SCRIPT_SHORT, FPS } from "./script-short";
 
 /**
- * 숏폼 Scene 기반 비디오 컴포넌트 (TTS 타이밍 SSOT 기반)
+ * 적나라브리핑 2.0 — 숏폼 렌더러 (9:16)
  *
- * 핵심 로직:
- * 1. 모든 영상은 10초로 확장 (scenes-extended/)
- * 2. TTS 오디오 타이밍이 SSOT (Single Source of Truth)
- * 3. TTS 문장 길이에 맞춰 영상 truncate
+ * 3파트 구조:
+ * - Opening: 뉴스룸 + 앵커 (BREAKING NEWS 바, LIVE 텍스트)
+ * - Body: 전체화면 애니메이션 (서브 스타일별 오버레이)
+ * - Closing: 뉴스룸 복귀 (체크리스트 자막)
  *
  * playbackMode:
  * - truncate: 오디오 <= 10초, 10초 영상을 TTS 길이에 맞춰 자름
@@ -38,6 +38,7 @@ interface SceneInfo {
   index: number;
   title: string;
   description: string;
+  sceneType?: "opening" | "body" | "closing";
   startSec: number;
   endSec: number;
   durationSec: number;
@@ -77,8 +78,112 @@ const AudioWithFallback: React.FC<{ src: string }> = ({ src }) => {
 };
 
 /**
+ * 뉴스 하단 티커 바 (BREAKING NEWS)
+ * Opening/Closing 씬에서만 표시
+ */
+const NewsTickerBar: React.FC<{ text: string }> = ({ text }) => {
+  const frame = useCurrentFrame();
+  // 깜빡이는 효과
+  const blink = Math.sin(frame * 0.3) > 0 ? 1 : 0.7;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 280,
+        left: 0,
+        right: 0,
+        display: "flex",
+        alignItems: "center",
+        height: 56,
+      }}
+    >
+      {/* BREAKING 뱃지 */}
+      <div
+        style={{
+          background: `rgba(220, 38, 38, ${blink})`,
+          padding: "8px 20px",
+          fontSize: 24,
+          fontWeight: 900,
+          fontFamily: "'GmarketSans', 'Impact', sans-serif",
+          color: "#FFF",
+          letterSpacing: "2px",
+          textTransform: "uppercase",
+          whiteSpace: "nowrap",
+        }}
+      >
+        BREAKING
+      </div>
+      {/* 티커 텍스트 */}
+      <div
+        style={{
+          flex: 1,
+          background: "rgba(0, 0, 0, 0.85)",
+          padding: "8px 20px",
+          fontSize: 22,
+          fontFamily: "'GmarketSans', sans-serif",
+          fontWeight: 500,
+          color: "#FFF",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          borderLeft: "3px solid #DC2626",
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * LIVE 뱃지 (Opening/Closing)
+ */
+const LiveBadge: React.FC = () => {
+  const frame = useCurrentFrame();
+  const dotOpacity = Math.sin(frame * 0.2) > 0 ? 1 : 0.3;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 80,
+        right: 40,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        background: "rgba(0, 0, 0, 0.7)",
+        padding: "8px 16px",
+        borderRadius: 6,
+      }}
+    >
+      <div
+        style={{
+          width: 10,
+          height: 10,
+          borderRadius: "50%",
+          background: "#DC2626",
+          opacity: dotOpacity,
+        }}
+      />
+      <span
+        style={{
+          fontSize: 18,
+          fontWeight: 700,
+          fontFamily: "'GmarketSans', sans-serif",
+          color: "#FFF",
+          letterSpacing: "1px",
+        }}
+      >
+        LIVE · NEW YORK
+      </span>
+    </div>
+  );
+};
+
+/**
  * 각 Scene에 대한 비디오 + 오버레이 렌더링
- * TTS 타이밍에 맞춰 비디오 재생
+ * 씬 타입에 따라 다른 UI 오버레이 적용
  */
 const SceneRenderer: React.FC<{
   scene: SceneInfo;
@@ -87,11 +192,12 @@ const SceneRenderer: React.FC<{
 }> = ({ scene, chapterInfo, totalScenes }) => {
   const frame = useCurrentFrame();
   const durationFrames = scene.durationFrames || Math.round(scene.durationSec * FPS);
+  const sceneType = scene.sceneType || chapterInfo?.sceneType || "body";
 
   // 애니메이션 진행률
   const progress = frame / durationFrames;
 
-  // 페이드 인/아웃 (부드럽게)
+  // 페이드 인/아웃
   const opacity = interpolate(
     frame,
     [0, 8, durationFrames - 8, durationFrames],
@@ -105,12 +211,8 @@ const SceneRenderer: React.FC<{
     easing: Easing.out(Easing.back(1.5)),
   });
 
-  // playbackMode 결정 (기본값: truncate)
-  // - truncate: 10초 영상을 TTS 길이에 맞춰 자름 (Sequence가 자동으로 처리)
-  // - loop: 10초 영상 반복 (TTS가 10초 초과 시)
+  // playbackMode 결정
   const playbackMode = scene.playbackMode || "truncate";
-
-  // loop 모드에서만 반복 재생
   const needsLoop = playbackMode === "loop";
 
   // 현재 재생 중인 문장 찾기 (TTS 타이밍 기반)
@@ -120,7 +222,6 @@ const SceneRenderer: React.FC<{
   );
 
   const viralTag = chapterInfo?.viralTag || "";
-  // 현재 문장을 자막으로 표시 (있으면 현재 문장, 없으면 전체 설명)
   const subtitle = currentSentence?.text || scene.description || chapterInfo?.script || "";
 
   // 자막 페이드 인 (문장 시작 시)
@@ -134,9 +235,11 @@ const SceneRenderer: React.FC<{
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
+  const isNewsroom = sceneType === "opening" || sceneType === "closing";
+
   return (
     <AbsoluteFill>
-      {/* 배경 비디오 - TTS 타이밍에 맞춰 재생 */}
+      {/* 배경 비디오 */}
       <AbsoluteFill>
         <OffthreadVideo
           src={staticFile(`videos/${scene.videoFile}`)}
@@ -148,7 +251,7 @@ const SceneRenderer: React.FC<{
             objectFit: "cover",
           }}
         />
-        {/* 비디오 위 어두운 오버레이 (텍스트 가독성) */}
+        {/* 비디오 위 어두운 오버레이 */}
         <div
           style={{
             position: "absolute",
@@ -156,14 +259,18 @@ const SceneRenderer: React.FC<{
             left: 0,
             right: 0,
             bottom: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.6) 100%)",
+            background: isNewsroom
+              ? "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.5) 100%)"
+              : "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.6) 100%)",
           }}
         />
       </AbsoluteFill>
 
-      {/* Viral Tag (왼쪽 상단, 형광초록) */}
-      {viralTag && (
+      {/* ━━━ 뉴스룸 오버레이 (Opening/Closing만) ━━━ */}
+      {isNewsroom && <LiveBadge />}
+
+      {/* ━━━ Viral Tag (Body 씬만, 왼쪽 상단) ━━━ */}
+      {!isNewsroom && viralTag && (
         <div
           style={{
             position: "absolute",
@@ -175,14 +282,13 @@ const SceneRenderer: React.FC<{
         >
           <div
             style={{
-              background: "rgba(0, 255, 100, 0.95)",
-              padding: "16px 32px",
-              borderRadius: 10,
-              fontSize: 42,
+              background: "rgba(220, 38, 38, 0.95)",
+              padding: "12px 24px",
+              borderRadius: 6,
+              fontSize: 36,
               fontWeight: 900,
-              fontFamily: "'GmarketSans', 'Bebas Neue', 'Impact', sans-serif",
-              color: "#000",
-              textShadow: "0 1px 2px rgba(255,255,255,0.3)",
+              fontFamily: "'GmarketSans', 'Impact', sans-serif",
+              color: "#FFF",
               letterSpacing: "1px",
               textTransform: "uppercase",
             }}
@@ -192,12 +298,17 @@ const SceneRenderer: React.FC<{
         </div>
       )}
 
-      {/* 한글 자막 (하단, 흰색 텍스트 + 검은 배경 박스) */}
+      {/* ━━━ 뉴스 티커 바 (Opening/Closing만) ━━━ */}
+      {isNewsroom && (
+        <NewsTickerBar text={chapterInfo?.viralHook || subtitle} />
+      )}
+
+      {/* ━━━ 한글 자막 (하단, 흰색 텍스트 + 검은 배경 박스) ━━━ */}
       {subtitle && (
         <div
           style={{
             position: "absolute",
-            bottom: 380,
+            bottom: isNewsroom ? 340 : 380,
             left: 30,
             right: 30,
             textAlign: "center",
@@ -242,7 +353,7 @@ const SceneRenderer: React.FC<{
           style={{
             height: "100%",
             width: `${((scene.index + progress) / totalScenes) * 100}%`,
-            background: "linear-gradient(90deg, #FF6B6B, #FFE66D)",
+            background: "linear-gradient(90deg, #DC2626, #F59E0B)",
             borderRadius: 3,
             transition: "width 0.1s linear",
           }}
@@ -267,25 +378,23 @@ const SceneRenderer: React.FC<{
 };
 
 /**
- * Scene 정보를 Chapter에 매핑 (index 기반으로 변경)
+ * Scene 정보를 Chapter에 매핑 (index 기반)
  */
 function getChapterForScene(
   scene: SceneInfo
 ): (typeof SCRIPT_SHORT)[0] | undefined {
-  // 씬 index와 chapter index가 동일
   if (scene.index < SCRIPT_SHORT.length) {
     return SCRIPT_SHORT[scene.index];
   }
   return SCRIPT_SHORT[SCRIPT_SHORT.length - 1];
 }
 
-export const StickFigureEconomicsShort: React.FC = () => {
+export const JuknaraBriefingShort: React.FC = () => {
   if (SCENES.length === 0) {
-    // Fallback: scenes-short.json이 없으면 placeholder
     return (
       <AbsoluteFill
         style={{
-          background: "#1a1a2e",
+          background: "#0a0a1a",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -328,7 +437,6 @@ export const StickFigureEconomicsShort: React.FC = () => {
 
       {/* Scene 시퀀스 (TTS 타이밍 SSOT 기반) */}
       {SCENES.map((scene, index) => {
-        // scenes-short.json에서 프레임 정보 사용 (정확한 타이밍)
         const startFrame = scene.startFrame !== undefined
           ? scene.startFrame
           : SCENES.slice(0, index).reduce(

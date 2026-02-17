@@ -1,8 +1,9 @@
 /**
- * Gemini 3 Pro로 씬 이미지 생성 (I2V용)
+ * 적나라브리핑 2.0 — Gemini 3 Pro 씬 이미지 생성 (I2V용)
  *
- * scenes-short.json의 프롬프트를 사용하여 10장의 이미지 생성
- * 출력: public/images/scenes/scene01.jpg ~ scene10.jpg
+ * scenes-short.json의 프롬프트를 사용하여 씬별 이미지 생성
+ * 스타일: 한국형 신화 웹툰 / 시네마틱 디지털 잉크 선화
+ * 출력: public/images/scenes/scene01.jpg ~ sceneN.jpg
  */
 
 import fs from "fs";
@@ -50,12 +51,13 @@ async function generateImage(
   const fullPrompt = `Generate a high-quality illustration image in 9:16 portrait aspect ratio (1080x1920 pixels).
 
 Style requirements:
-- Minimalistic stick-figure or simple illustration style
-- Clean lines, limited colors (warm beige, charcoal gray, cream white, subtle gold accents)
-- Soft diffused lighting like golden hour
-- Warm editorial cartoon style with light watercolor texture
-- No text, captions, logos, or watermarks
-- Professional documentary feel
+- Korean mythical webtoon (manhwa) style — Cinematic digital ink lineart
+- Clean sharp contours, disciplined line-weight hierarchy (bold outer silhouettes, medium interior forms, ultra-thin facial lines)
+- Filmic cel-to-painterly hybrid shading with clearly defined shadow shapes and soft gradient rolloff
+- Rich luminous colors with confident saturation, 1-2 vivid accent colors (bright but never neon)
+- Soft directional lighting with gentle falloff, practical-inspired bounce light
+- NO photorealistic rendering, NO text, captions, logos, or watermarks
+- Consistent character model across all scenes
 
 Scene: ${prompt}`;
 

@@ -1,10 +1,10 @@
 import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { StickFigureEconomics } from "./JuknaraBriefing/StickFigureEconomics";
-import { StickFigureEconomicsShort } from "./JuknaraBriefing/StickFigureEconomicsShort";
-import { CyberpunkTechNews } from "./JuknaraBriefingTechNews/CyberpunkTechNews";
-import { CyberpunkTechNewsShort } from "./JuknaraBriefingTechNews/CyberpunkTechNewsShort";
+import { JuknaraBriefing } from "./JuknaraBriefing/JuknaraBriefing";
+import { JuknaraBriefingShort } from "./JuknaraBriefing/JuknaraBriefingShort";
+import { JuknaraBriefingTechNews } from "./JuknaraBriefingTechNews/JuknaraBriefingTechNews";
+import { JuknaraBriefingTechNewsShort } from "./JuknaraBriefingTechNews/JuknaraBriefingTechNewsShort";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -12,38 +12,38 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="StickFigureEconomics"
-        component={StickFigureEconomics}
+        id="JuknaraBriefing"
+        component={JuknaraBriefing}
         durationInFrames={1680}
         fps={30}
         width={1920}
         height={1080}
       />
 
-      {/* 숏폼 9:16 — 75초 (오디오 길이 기반, 9씬) */}
+      {/* 숏폼 9:16 — TTS 오디오 길이 기반 */}
       <Composition
-        id="StickFigureEconomicsShort"
-        component={StickFigureEconomicsShort}
+        id="JuknaraBriefingShort"
+        component={JuknaraBriefingShort}
         durationInFrames={2241}
         fps={30}
         width={1080}
         height={1920}
       />
 
-      {/* Cyberpunk Tech News — 롱폼 16:9 */}
+      {/* TechNews — 롱폼 16:9 */}
       <Composition
-        id="CyberpunkTechNews"
-        component={CyberpunkTechNews}
+        id="JuknaraBriefingTechNews"
+        component={JuknaraBriefingTechNews}
         durationInFrames={2100}
         fps={30}
         width={1920}
         height={1080}
       />
 
-      {/* Cyberpunk Tech News — 숏폼 9:16 */}
+      {/* TechNews — 숏폼 9:16 */}
       <Composition
-        id="CyberpunkTechNewsShort"
-        component={CyberpunkTechNewsShort}
+        id="JuknaraBriefingTechNewsShort"
+        component={JuknaraBriefingTechNewsShort}
         durationInFrames={1680}
         fps={30}
         width={1080}

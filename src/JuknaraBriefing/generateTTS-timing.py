@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TTS 타이밍 분석기 (SSOT - Single Source of Truth)
+적나라브리핑 2.0 — TTS 타이밍 분석기 (SSOT - Single Source of Truth)
 
 Edge TTS의 WordBoundary 이벤트를 사용하여 문장별 정확한 타이밍을 추출합니다.
 이 타이밍 데이터는 이미지/영상 편집의 기준이 됩니다.
 
-핵심 로직:
-1. TTS 생성 시 WordBoundary 이벤트로 각 단어의 시작/끝 시간 추출
-2. 문장 단위로 그룹화하여 각 문장의 시작/끝 시간 계산
-3. 씬별 타이밍 데이터를 scenes-timing.json에 저장
-4. 영상 편집 시 이 타이밍을 기준으로 영상 길이 결정
+영상 구조:
+- Opening (scene01): 뉴스룸 앵커 등장, 10초 이내
+- Body (scene02~N-1): 본문 애니메이션
+- Closing (sceneN): 뉴스룸 복귀, 10초 이내
 
 출력 파일:
 - public/audio/clips-short/{scene_id}.mp3 - 씬별 TTS 오디오
@@ -27,8 +26,8 @@ import edge_tts
 import subprocess
 from typing import List, Dict, Tuple
 
-VOICE = "ko-KR-InJoonNeural"
-RATE = "+30%"
+VOICE = "ko-KR-SunHiNeural"  # 여성 뉴스 앵커 목소리 (태리)
+RATE = "+20%"
 VOLUME = "+0%"
 VIDEO_DURATION = 5.0  # 원본 비디오 길이 (초)
 EXTENDED_VIDEO_DURATION = 10.0  # reverse-loop 비디오 길이 (초)
@@ -39,35 +38,50 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "../../public/audio/clips-short")
 SCENES_FILE = os.path.join(BASE_DIR, "scenes-short.json")
 TIMING_FILE = os.path.join(BASE_DIR, "scenes-timing.json")
 
-# script-short.ts에서 가져온 씬별 스크립트
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 씬별 스크립트 — 새 영상 제작 시 여기만 수정
+# 구조: [Opening, Body1, Body2, ..., Closing]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SCENE_SCRIPTS = [
-    '중국이 이번 주에 AI 모델 3개를 동시에 쏟아냈습니다. 구글 딥마인드 CEO가 말했죠, "중국은 불과 몇 달 뒤에 있다."',
-    "먼저 알리바바입니다. 로봇 두뇌 'RynnBrain'을 공개했는데요, 물건을 알아보고, 집어서, 바구니에 넣습니다.",
-    "구글 제미니 로보틱스, 엔비디아 코스모스를 16개의 benchmark에서 다 이겼어요. 게다가 오픈소스로 무료 공개했구요.",
-    "다음은 바이트댄스. 영상 생성 AI 'Seedance' 인데, 텍스트·이미지·영상·음성을 동시에 입력하면 2K 영상을 만들어줍니다.",
-    '중국에서는 "제2의 딥시크"라는 말까지 나왔어요.',
-    "이게 한국에 왜 중요하냐면요, 첫째, 로봇입니다. 현대·삼성이 휴머노이드 로봇에 투자 중인데, 중국이 AI 두뇌를 오픈소스로 풀어버리면 가격 경쟁력에서 밀릴 수 있어요.",
-    "둘째, 콘텐츠예요. 한국 광고·영상 업계가 영상 AI 도입을 준비 중인데, Seedance 가 Sora 보다 싸고 빠르면 판이 바뀝니다.",
-    "셋째, 반도체입니다. 중국이 미국 칩 제재 속에서도 이런 모델을 내놓는다는 건, SK하이닉스 AI 메모리 수요 구조에도 영향을 줄 수 있거든요.",
-    "AI 전쟁, 미국 vs 중국 사이에서 한국은 어디쯤 있을까요?",
+    # [Opening] 뉴스룸 앵커 등장, 10초 이내
+    "",
+    # [Body] 본문 씬들
+    "",
+    # [Closing] 뉴스룸 복귀, 10초 이내
+    "",
 ]
 
 SCENE_TITLES = [
-    "중국 AI 폭격",
-    "알리바바 RynnBrain",
-    "벤치마크 압승",
-    "바이트댄스 Seedance",
-    "제2의 딥시크",
-    "한국 영향 - 로봇",
-    "한국 영향 - 콘텐츠",
-    "한국 영향 - 반도체",
-    "한국의 위치",
+    "오프닝",
+    "본문",
+    "클로징",
 ]
+
+# 씬 타입 매핑 (첫 번째=opening, 마지막=closing, 나머지=body)
+def get_scene_type(index: int, total: int) -> str:
+    if index == 0:
+        return "opening"
+    elif index == total - 1:
+        return "closing"
+    else:
+        return "body"
 
 
 def get_audio_duration(filepath: str) -> float:
     """오디오 파일의 길이(초)를 반환"""
     try:
+        # Try ffprobe first (linux)
+        result = subprocess.run(
+            ["ffprobe", "-i", filepath, "-show_entries", "format=duration",
+             "-v", "quiet", "-of", "csv=p=0"],
+            capture_output=True, text=True
+        )
+        if result.stdout.strip():
+            return float(result.stdout.strip())
+    except Exception:
+        pass
+    try:
+        # Try afinfo (macOS)
         result = subprocess.run(
             ["afinfo", filepath], capture_output=True, text=True
         )
@@ -96,28 +110,16 @@ def determine_video_settings(audio_duration: float) -> Dict:
 
     모든 영상은 먼저 10초 (scenes-extended/)로 확장된 상태.
     TTS 타이밍에 맞춰 필요한 길이로 truncate.
-
-    Returns:
-        {
-            "playbackMode": "normal" | "reverse-loop" | "loop",
-            "videoFolder": "scenes-extended" (항상 10초 영상 사용),
-            "videoDuration": 10초 (확장된 영상 길이),
-            "needsTruncate": True/False,
-            "truncateDuration": TTS 오디오 길이에 맞춘 실제 필요 길이
-        }
     """
-    # 항상 10초 확장 영상 사용 (scenes-extended/)
     if audio_duration <= EXTENDED_VIDEO_DURATION:
-        # 10초 이하: 10초 영상을 TTS 길이에 맞춰 truncate
         return {
-            "playbackMode": "truncate",  # 10초 영상을 짧게 자름
+            "playbackMode": "truncate",
             "videoFolder": "scenes-extended",
             "videoDuration": EXTENDED_VIDEO_DURATION,
             "needsTruncate": True,
             "truncateDuration": audio_duration
         }
     else:
-        # 10초 초과: 10초 영상 반복 재생
         return {
             "playbackMode": "loop",
             "videoFolder": "scenes-extended",
@@ -130,9 +132,6 @@ def determine_video_settings(audio_duration: float) -> Dict:
 async def generate_tts_with_timing(scene_id: str, script: str) -> Tuple[float, List[Dict]]:
     """
     TTS 생성하면서 WordBoundary 이벤트로 타이밍 추출
-
-    Returns:
-        (총 길이, [{'text': str, 'start': float, 'end': float, 'duration': float}])
     """
     output_path = os.path.join(OUTPUT_DIR, f"{scene_id}.mp3")
 
@@ -141,39 +140,31 @@ async def generate_tts_with_timing(scene_id: str, script: str) -> Tuple[float, L
     word_timings = []
     audio_data = b""
 
-    # stream()으로 WordBoundary 이벤트와 오디오 데이터 동시 수집
     async for event in communicate.stream():
         if event["type"] == "WordBoundary":
             word_timings.append({
                 "text": event["text"],
-                "start_ms": event["offset"],  # 100ns 단위
-                "duration_ms": event["duration"]  # 100ns 단위
+                "start_ms": event["offset"],
+                "duration_ms": event["duration"]
             })
         elif event["type"] == "audio":
             audio_data += event["data"]
 
-    # 오디오 파일 저장
     with open(output_path, "wb") as f:
         f.write(audio_data)
 
-    # 실제 오디오 길이
     total_duration = get_audio_duration(output_path)
 
-    # 문장별로 그룹화
     sentences = split_into_sentences(script)
     sentence_timings = []
 
     if word_timings:
-        # WordBoundary 데이터가 있으면 문장별 타이밍 계산
         current_word_idx = 0
-        current_pos = 0
 
         for sentence in sentences:
             sentence_start = None
             sentence_end = None
-            sentence_words = []
 
-            # 문장에 포함된 단어들 찾기
             remaining_text = sentence
             while current_word_idx < len(word_timings) and remaining_text:
                 word_data = word_timings[current_word_idx]
@@ -181,13 +172,11 @@ async def generate_tts_with_timing(scene_id: str, script: str) -> Tuple[float, L
 
                 if word_text in remaining_text:
                     if sentence_start is None:
-                        sentence_start = word_data["start_ms"] / 10_000_000  # 100ns → 초
+                        sentence_start = word_data["start_ms"] / 10_000_000
 
                     end_time = (word_data["start_ms"] + word_data["duration_ms"]) / 10_000_000
                     sentence_end = end_time
-                    sentence_words.append(word_text)
 
-                    # 텍스트에서 해당 단어 이후 부분만 남김
                     idx = remaining_text.find(word_text)
                     if idx >= 0:
                         remaining_text = remaining_text[idx + len(word_text):].strip()
@@ -204,7 +193,6 @@ async def generate_tts_with_timing(scene_id: str, script: str) -> Tuple[float, L
                     "durationSec": round(sentence_end - sentence_start, 3)
                 })
 
-    # WordBoundary가 없거나 불완전하면 균등 분배
     if not sentence_timings and sentences:
         avg_duration = total_duration / len(sentences)
         current_time = 0
@@ -224,56 +212,56 @@ async def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("🎙️ TTS 타이밍 분석기 (SSOT)")
+    print("🎙️ 적나라브리핑 2.0 — TTS 타이밍 분석기 (SSOT)")
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print(f"🗣️ 음성: {VOICE} (속도: {RATE})")
     print("📌 이 타이밍 데이터가 모든 영상 편집의 기준입니다.\n")
 
     scenes = []
     timing_data = []
     current_time = 0.0
     total_duration = 0.0
+    total_scenes = len(SCENE_SCRIPTS)
 
     for i, (script, title) in enumerate(zip(SCENE_SCRIPTS, SCENE_TITLES)):
         scene_id = f"scene{str(i + 1).zfill(2)}"
-        print(f"🎬 [{scene_id}] {title}")
+        scene_type = get_scene_type(i, total_scenes)
+        type_emoji = {"opening": "📺", "body": "🎨", "closing": "📺"}[scene_type]
+
+        print(f"{type_emoji} [{scene_id}] {title} ({scene_type})")
         print(f"   📝 {script[:50]}...")
 
-        # TTS 생성 + 타이밍 추출
         duration, sentence_timings = await generate_tts_with_timing(scene_id, script)
 
-        # 비디오 설정 결정
         video_settings = determine_video_settings(duration)
 
-        # 씬 정보 생성
         scene = {
             "id": scene_id,
             "index": i,
             "title": title,
             "description": script,
+            "sceneType": scene_type,
             "startSec": round(current_time, 3),
             "endSec": round(current_time + duration, 3),
             "durationSec": round(duration, 3),
             "startFrame": int(current_time * FPS),
             "endFrame": int((current_time + duration) * FPS),
             "durationFrames": int(duration * FPS),
-            # 비디오 설정
             "playbackMode": video_settings["playbackMode"],
             "videoFile": f"{video_settings['videoFolder']}/{scene_id}.mp4",
             "videoDuration": video_settings["videoDuration"],
             "needsTruncate": video_settings["needsTruncate"],
             "truncateDuration": video_settings["truncateDuration"],
-            # 오디오
             "audioFile": f"clips-short/{scene_id}.mp3",
-            # 문장별 타이밍 (씬 내 상대 시간)
             "sentences": sentence_timings
         }
         scenes.append(scene)
 
-        # 타이밍 데이터 (전체 영상 기준 절대 시간)
         for st in sentence_timings:
             timing_data.append({
                 "sceneId": scene_id,
                 "sceneIndex": i,
+                "sceneType": scene_type,
                 "text": st["text"],
                 "absoluteStartSec": round(current_time + st["startSec"], 3),
                 "absoluteEndSec": round(current_time + st["endSec"], 3),
@@ -282,7 +270,6 @@ async def main():
                 "durationSec": st["durationSec"]
             })
 
-        # 상태 출력
         mode_emoji = {"truncate": "✂️", "loop": "🔄"}[video_settings["playbackMode"]]
         truncate_info = f"(10초 → {duration:.1f}초)" if video_settings["needsTruncate"] else ""
         print(f"   ⏱️  {duration:.2f}초 | {mode_emoji} {video_settings['playbackMode']} {truncate_info}")
@@ -297,10 +284,13 @@ async def main():
 
     # scenes-timing.json 저장 (SSOT)
     ssot_data = {
-        "version": "1.0",
+        "version": "2.0",
+        "project": "적나라브리핑",
         "totalDurationSec": round(total_duration, 3),
         "totalFrames": int(total_duration * FPS),
         "fps": FPS,
+        "voice": VOICE,
+        "rate": RATE,
         "scenes": scenes,
         "sentenceTimings": timing_data
     }
@@ -332,8 +322,9 @@ async def main():
     print(f"\n📊 비디오 설정 요약:")
     for scene in scenes:
         mode = scene["playbackMode"]
+        stype = scene["sceneType"]
         trunc = f"→ {scene['truncateDuration']:.1f}초" if scene["needsTruncate"] else ""
-        print(f"   [{scene['id']}] {mode:12} | {scene['durationSec']:.1f}초 {trunc}")
+        print(f"   [{scene['id']}] {stype:8} | {mode:12} | {scene['durationSec']:.1f}초 {trunc}")
 
 
 if __name__ == "__main__":

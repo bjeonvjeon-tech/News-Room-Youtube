@@ -230,7 +230,7 @@ async function main() {
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   if (success + skipped === scenes.length) {
     console.log("🎉 모든 비디오 준비 완료!");
-    console.log("   npx remotion render StickFigureEconomicsShort out/final.mp4");
+    console.log("   npx remotion render JuknaraBriefingShort out/final.mp4");
   }
 }
 

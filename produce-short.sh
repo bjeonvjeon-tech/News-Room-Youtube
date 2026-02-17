@@ -1,39 +1,41 @@
 #!/bin/bash
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 🎬 Stick Figure Economics — 숏폼 영상 제작 (9:16, 60초)
+# 🎬 적나라브리핑 2.0 — 숏폼 영상 제작 (9:16)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# 영상 구조:
+#   - Opening (Hook): 뉴스룸 앵커 등장, 10초 이내
+#   - Body (Visual Insight): 본문 애니메이션 (4가지 서브 스타일)
+#   - Closing (Impact): 뉴스룸 복귀, 10초 이내
 #
 # ⚠️ 고정 포맷:
 #   - 해상도: 1080x1920 (9:16 세로)
 #   - FPS: 30
-#   - 최대 길이: 60초
-#   - 오디오: public/audio/full_narration_short.mp3
-#   - 이미지: public/images-short/
-#   - 클립 비디오: public/videos/clips-short/
-#   - 출력: out/StickFigureEconomicsShort.mp4
+#   - TTS 음성: ko-KR-SunHiNeural (태리)
+#   - 출력: out/JuknaraBriefingShort.mp4
 #
 # 사용법:
-#   ./produce-short.sh              (전체 파이프라인: TTS → 프레임보정 → 이미지 → 클립 → Veo → 렌더)
+#   ./produce-short.sh              (전체 파이프라인)
 #   ./produce-short.sh --render-only (렌더만)
 #
 # 사전 준비:
 #   1. script-short.ts 에 챕터 작성 완료
-#   2. generateTTS-short.py 에 대본 붙여넣기 완료
+#   2. generateTTS-timing.py 에 대본 붙여넣기 완료
 #
 # 파이프라인 (7단계):
-#   1. Edge TTS → full_narration_short.mp3
-#   2. afinfo → 실제 길이 측정 → script-short.ts + Root.tsx 프레임 보정
-#   3. Gemini → 9:16 이미지 생성
-#   4. ffmpeg → 오디오 8초 클립 분할 (clips-short.json)
-#   5. Gemini → 클립별 비디오 프롬프트 생성 (videoPrompts-short.json)
-#   6. Veo 3.1 → 클립 비디오 생성 (9:16, 8초)
+#   1. Edge TTS (SSOT 타이밍) → clips-short/ + scenes-short.json
+#   2. 오디오 길이 측정 → script-short.ts + Root.tsx 프레임 보정
+#   3. Gemini → 9:16 씬 이미지 생성
+#   4. Wan 2.5 I2V → 5초 비디오 생성
+#   5. ffmpeg → 10초 reverse-loop 확장
+#   6. (선택) Kling lipsync → Opening/Closing 입싱크
 #   7. Remotion → MP4 렌더링 (1080x1920)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 set -e
 
 cd "$(dirname "$0")"
-SRC="src/StickFigureEconomics"
+SRC="src/JuknaraBriefing"
 PUBLIC="public"
 
 # 색상
@@ -53,13 +55,13 @@ if [ "$1" = "--render-only" ]; then
   RENDER_ONLY=true
 fi
 
-# ━━━ Step 1~6: TTS + 프레임보정 + 이미지 + 클립 분할 + 프롬프트 + Veo ━━━
+# ━━━ Step 1~6: TTS + 이미지 + 비디오 생성 ━━━
 if [ "$RENDER_ONLY" = false ]; then
 
-  # ── Step 1: TTS 생성 ──
-  log "Step 1/7: TTS 나레이션 생성 (Edge TTS)"
-  python3 "$SRC/generateTTS-short.py"
-  ok "TTS 생성 완료"
+  # ── Step 1: TTS 생성 (SSOT 타이밍 포함) ──
+  log "Step 1/7: TTS 나레이션 + 타이밍 추출 (Edge TTS, SSOT)"
+  python3 "$SRC/generateTTS-timing.py"
+  ok "TTS + 타이밍 SSOT 생성 완료"
 
   # ── Step 2: 오디오 길이 측정 → 프레임 보정 ──
   log "Step 2/7: 오디오 길이 측정 + 프레임 보정"
@@ -69,9 +71,10 @@ if [ "$RENDER_ONLY" = false ]; then
     err "오디오 파일이 없습니다: $AUDIO_FILE"
   fi
 
-  DURATION_SEC=$(afinfo "$AUDIO_FILE" 2>/dev/null | grep "estimated duration" | awk '{print $3}')
+  # Try ffprobe first (linux), then afinfo (macOS)
+  DURATION_SEC=$(ffprobe -i "$AUDIO_FILE" -show_entries format=duration -v quiet -of csv="p=0" 2>/dev/null || echo "")
   if [ -z "$DURATION_SEC" ]; then
-    DURATION_SEC=$(ffprobe -i "$AUDIO_FILE" -show_entries format=duration -v quiet -of csv="p=0" 2>/dev/null || echo "")
+    DURATION_SEC=$(afinfo "$AUDIO_FILE" 2>/dev/null | grep "estimated duration" | awk '{print $3}')
   fi
   if [ -z "$DURATION_SEC" ]; then
     err "오디오 길이를 측정할 수 없습니다"
@@ -82,45 +85,39 @@ if [ "$RENDER_ONLY" = false ]; then
 
   echo "  오디오 길이: ${DURATION_SEC}초 → ${TOTAL_FRAMES} frames"
 
-  # 챕터 수 계산
-  CHAPTER_COUNT=$(grep -c '"ch[0-9]' "$SRC/script-short.ts" || echo "4")
-  SCENE_DUR=$((TOTAL_FRAMES / CHAPTER_COUNT))
-
-  echo "  챕터 수: ${CHAPTER_COUNT}, 씬당: ${SCENE_DUR} frames"
-
   # script-short.ts 프레임 보정
   if grep -q "__TOTAL_DURATION__" "$SRC/script-short.ts"; then
-    sed -i '' "s/__TOTAL_DURATION__/${TOTAL_FRAMES}/g" "$SRC/script-short.ts"
-    sed -i '' "s/__SCENE_DUR__/${SCENE_DUR}/g" "$SRC/script-short.ts"
+    sed -i "s/__TOTAL_DURATION__/${TOTAL_FRAMES}/g" "$SRC/script-short.ts"
   else
-    sed -i '' "s/TOTAL_DURATION = [0-9]*/TOTAL_DURATION = ${TOTAL_FRAMES}/" "$SRC/script-short.ts"
-    sed -i '' "s/const SCENE_DUR = [0-9]*/const SCENE_DUR = ${SCENE_DUR}/" "$SRC/script-short.ts"
+    sed -i "s/TOTAL_DURATION = [0-9]*/TOTAL_DURATION = ${TOTAL_FRAMES}/" "$SRC/script-short.ts"
   fi
 
-  # Root.tsx 숏폼 프레임 업데이트 (StickFigureEconomicsShort의 durationInFrames)
-  sed -i '' "/StickFigureEconomicsShort/,/\/>/{s/durationInFrames={[0-9]*}/durationInFrames={${TOTAL_FRAMES}}/;}" "src/Root.tsx"
+  # Root.tsx 숏폼 프레임 업데이트 (JuknaraBriefingShort의 durationInFrames)
+  sed -i "/JuknaraBriefingShort/,/\/>/{s/durationInFrames={[0-9]*}/durationInFrames={${TOTAL_FRAMES}}/;}" "src/Root.tsx"
 
   ok "프레임 보정 완료: ${TOTAL_FRAMES} frames (${DURATION_INT}초)"
 
-  # ── Step 3: 이미지 생성 (9:16) ──
-  log "Step 3/7: 이미지 생성 (Gemini 2.5 Pro, 9:16)"
-  npx ts-node "$SRC/generateImages-short.ts"
-  ok "이미지 생성 완료"
+  # ── Step 3: 씬 이미지 생성 (Gemini, I2V용) ──
+  log "Step 3/7: 씬 이미지 생성 (Gemini 3 Pro, 9:16)"
+  npx ts-node "$SRC/generateSceneImages.ts"
+  ok "씬 이미지 생성 완료"
 
-  # ── Step 4: 오디오 클립 분할 ──
-  log "Step 4/7: 오디오 8초 클립 분할 (ffmpeg)"
-  npx ts-node "$SRC/splitAudio-short.ts"
-  ok "오디오 클립 분할 완료"
+  # ── Step 4: I2V 비디오 생성 (Wan 2.5) ──
+  log "Step 4/7: I2V 비디오 생성 (Wan 2.5, 5초)"
+  npx ts-node "$SRC/generateVideos-i2v.ts"
+  ok "I2V 비디오 생성 완료"
 
-  # ── Step 5: 클립별 비디오 프롬프트 생성 ──
-  log "Step 5/7: 클립별 비디오 프롬프트 생성 (Gemini 2.5 Pro)"
-  npx ts-node "$SRC/generateVideoPrompts-short.ts"
-  ok "비디오 프롬프트 생성 완료"
+  # ── Step 5: 10초 reverse-loop 확장 ──
+  log "Step 5/7: 10초 reverse-loop 확장"
+  npx ts-node "$SRC/createReverseLoop.ts" 2>/dev/null || bash "$SRC/createReverseLoop.sh" 2>/dev/null || echo "  ⚠️ reverse-loop 스킵 (수동 처리 필요)"
+  ok "reverse-loop 확장 완료"
 
-  # ── Step 6: 클립 비디오 생성 (Veo 3.1, 9:16) ──
-  log "Step 6/7: 클립 비디오 생성 (Veo 3.1, 9:16)"
-  npx ts-node "$SRC/generateVideos-short.ts"
-  ok "클립 비디오 생성 완료"
+  # ── Step 6: (선택) Kling lipsync (Opening/Closing) ──
+  log "Step 6/7: Kling lipsync (선택사항)"
+  echo "  ⚠️ Opening/Closing lipsync는 수동으로 Kling에서 처리하세요"
+  echo "  📁 입력: public/videos/scenes-extended/scene01.mp4 (오프닝)"
+  echo "  📁 입력: public/videos/scenes-extended/sceneN.mp4 (클로징)"
+  echo "  🎙️ 오디오: public/audio/clips-short/scene01.mp3, sceneN.mp3"
 
 fi
 
@@ -130,10 +127,10 @@ log "Step 7/7: 영상 렌더링 (Remotion, 1080x1920)"
 # Remotion Studio가 떠있으면 죽이기
 lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 
-OUTPUT_FILE="out/StickFigureEconomicsShort.mp4"
+OUTPUT_FILE="out/JuknaraBriefingShort.mp4"
 mkdir -p out
 
-npx remotion render StickFigureEconomicsShort "$OUTPUT_FILE" \
+npx remotion render JuknaraBriefingShort "$OUTPUT_FILE" \
   --codec h264 \
   --concurrency 50%
 
@@ -142,7 +139,7 @@ ok "렌더링 완료!"
 # 결과 요약
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}🎬 숏폼 영상 제작 완료! (9:16)${NC}"
+echo -e "${GREEN}🎬 적나라브리핑 숏폼 영상 제작 완료! (9:16)${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "  📁 파일: ${YELLOW}$(pwd)/$OUTPUT_FILE${NC}"
