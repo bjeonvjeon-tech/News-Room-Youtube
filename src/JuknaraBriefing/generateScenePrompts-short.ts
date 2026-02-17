@@ -51,12 +51,14 @@ NO photorealistic rendering, NO direct camera gaze, NO centered portrait framing
 No on-screen text or UI elements except news lower-thirds.`;
 
 /**
- * 주인공 캐릭터: K-아나운서 '태리 (Taeri)'
+ * 마스터 캐릭터: K-아나운서 '태리 (Taeri)'
+ * ⚠️ Opening/Closing에만 등장. Body 씬에는 절대 등장하지 않음.
+ * Body 씬의 랜덤 캐릭터는 MASTER_STYLE 렌더링 규칙만 따름.
  */
 const PROTAGONIST = `a young Korean female news anchor 'Taeri' in her late 20s,
-sharp intelligent eyes, sleek black hair styled professionally,
-wearing a fitted navy blue blazer over a crisp white blouse,
-confident and expressive demeanor, dynamic emotional reactions`;
+sharp intelligent eyes, long straight black hair past shoulders,
+wearing a fitted pink (rose) blazer over a crisp white blouse,
+confident and approachable demeanor, dynamic emotional reactions`;
 
 /**
  * 뉴스룸 배경 (Opening/Closing용)
@@ -235,8 +237,12 @@ TASK:
 6. For each scene, describe what should be visually shown (in English)
 
 IMPORTANT VISUAL GUIDELINES:
-- The protagonist is: ${PROTAGONIST}
-- Opening/Closing: NYC newsroom with LED walls, anchor desk
+- The master character (protagonist) is: ${PROTAGONIST}
+- ⚠️ CRITICAL CHARACTER RULE:
+  - Opening/Closing scenes: Master character 'Taeri' MUST appear in the newsroom
+  - Body scenes: Master character 'Taeri' MUST NOT appear. No Taeri in any body scene.
+  - Body scenes may include anonymous/random characters rendered in the master webtoon style, but NEVER Taeri herself.
+- Opening/Closing: NYC newsroom with LED walls, anchor desk, Taeri present
 - Body scenes MUST use one of these 4 visual sub-styles based on news type:
 
   TYPE A "neon_future" (Tech & Innovation): ${BODY_SUB_STYLES.neon_future.concept}
@@ -320,7 +326,7 @@ Output ONLY valid JSON, no markdown or explanation.`;
       // 프롬프트 조합
       let flowPrompt: string;
       if (sceneType === "opening" || sceneType === "closing") {
-        // 뉴스룸 씬: 뉴스룸 배경 + 캐릭터
+        // 뉴스룸 씬: 뉴스룸 배경 + 마스터 캐릭터(태리)
         flowPrompt = `${MASTER_STYLE}
 
 Scene: ${NEWSROOM} ${s.visualDescription}
@@ -329,7 +335,7 @@ The anchor is ${PROTAGONIST}.
 
 Camera: ${camera}. ${COLOR_PALETTE}`;
       } else {
-        // 본문 씬: 서브 스타일 적용
+        // 본문 씬: 서브 스타일 적용, 마스터 캐릭터(태리) 제외
         const subStyle = bodySubStyle && BODY_SUB_STYLES[bodySubStyle as keyof typeof BODY_SUB_STYLES];
         const subStyleDirective = subStyle
           ? `\nVisual Direction [${subStyle.name}]: ${subStyle.concept}\nKeywords: ${subStyle.keywords}\n${subStyle.colorPalette}\n${subStyle.composition}`
@@ -337,6 +343,8 @@ Camera: ${camera}. ${COLOR_PALETTE}`;
 
         flowPrompt = `${MASTER_STYLE}
 ${subStyleDirective}
+
+IMPORTANT: Do NOT include the news anchor 'Taeri' (young Korean woman with long black hair and pink blazer) in this scene. This is a body scene — only show the news content visuals, environments, and anonymous characters if needed. Any characters must be different from Taeri.
 
 Scene: ${s.visualDescription}
 

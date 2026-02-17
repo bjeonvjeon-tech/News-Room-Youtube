@@ -20,6 +20,7 @@ interface SceneInfo {
   index: number;
   title: string;
   description: string;
+  sceneType?: "opening" | "body" | "closing";
   startSec: number;
   endSec: number;
   durationSec: number;
@@ -43,10 +44,17 @@ function extractImagePrompt(flowPrompt: string): string {
 
 async function generateImage(
   prompt: string,
-  filename: string
+  filename: string,
+  scene?: SceneInfo
 ): Promise<boolean> {
   console.log(`\n🎨 Generating: ${filename}`);
   console.log(`   📝 Prompt: ${prompt.substring(0, 80)}...`);
+
+  // sceneType에 따라 캐릭터 지시 추가
+  const isBodyScene = scene?.sceneType === "body";
+  const characterDirective = isBodyScene
+    ? `\n- IMPORTANT: Do NOT include the master character 'Taeri' (young Korean woman with long straight black hair and pink blazer). Body scenes show news content visuals only. Any human characters must be anonymous/different from Taeri.`
+    : `\n- Master character 'Taeri': young Korean female anchor, long straight black hair past shoulders, pink (rose) blazer over white blouse, sharp intelligent eyes, confident demeanor. Consistent character model across Opening/Closing scenes.`;
 
   const fullPrompt = `Generate a high-quality illustration image in 9:16 portrait aspect ratio (1080x1920 pixels).
 
@@ -56,8 +64,7 @@ Style requirements:
 - Filmic cel-to-painterly hybrid shading with clearly defined shadow shapes and soft gradient rolloff
 - Rich luminous colors with confident saturation, 1-2 vivid accent colors (bright but never neon)
 - Soft directional lighting with gentle falloff, practical-inspired bounce light
-- NO photorealistic rendering, NO text, captions, logos, or watermarks
-- Consistent character model across all scenes
+- NO photorealistic rendering, NO text, captions, logos, or watermarks${characterDirective}
 
 Scene: ${prompt}`;
 
@@ -147,7 +154,7 @@ async function main() {
     }
 
     const imagePrompt = extractImagePrompt(scene.flowPrompt);
-    const success = await generateImage(imagePrompt, scene.id);
+    const success = await generateImage(imagePrompt, scene.id, scene);
     results.push({ scene: scene.id, status: success ? "success" : "failed" });
 
     // API 레이트 리밋 방지 (3초 대기)

@@ -46,12 +46,13 @@ export const TOTAL_DURATION = 0; // TTS 생성 후 동적 계산
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * 캐릭터 스타일: K-아나운서 '태리 (Taeri)'
- * - 신뢰감을 주는 네이비/그레이 수트
- * - 풍부한 감정 표현
+ * 마스터 캐릭터: K-아나운서 '태리 (Taeri)'
+ * - 긴 생머리 블랙 헤어
+ * - 핑크(로즈) 블레이저 + 화이트 블라우스
  * - 한국형 신화 웹툰 스타일
+ * ⚠️ Opening/Closing에만 등장. Body 씬에는 등장하지 않음.
  */
-const CHAR = `Young Korean female news anchor 'Taeri' in her late 20s, sharp intelligent eyes, sleek black hair styled professionally, wearing a fitted navy blue blazer over a crisp white blouse, confident and expressive demeanor. She conveys trust and authority while remaining approachable and dynamic.`;
+const CHAR = `Young Korean female news anchor 'Taeri' in her late 20s, sharp intelligent eyes, long straight black hair past shoulders, wearing a fitted pink (rose) blazer over a crisp white blouse, confident and approachable demeanor. She conveys trust and authority while remaining dynamic and expressive.`;
 
 /**
  * 배경 스타일: 한국형 신화 웹툰(만화) 스타일
@@ -102,14 +103,17 @@ Scene: ${NEWSROOM} Taeri stands behind the anchor desk, looking directly ahead w
     duration: SCENE_DUR,
   },
   // ━━━ Body (Visual Insight) — 새 영상 제작 시 여기에 씬 추가 ━━━
+  // ⚠️ Body 씬에는 마스터 캐릭터(태리)가 등장하지 않음!
+  //    CHAR 대신 STYLE만 사용. 랜덤 캐릭터는 마스터 디자인 가이드(STYLE)를 따름.
   // 예시:
   // {
   //   id: "ch01",
   //   title: "본문 씬 제목",
   //   script: SCENE_SCRIPTS[1],
   //   sceneType: "body",
-  //   imagePrompt: `${CHAR} ${STYLE}
-  //   Scene: 본문 씬 설명...`,
+  //   bodySubStyle: "neon_future",
+  //   imagePrompt: `${STYLE}
+  //   Scene: 본문 씬 설명... (태리 없이, 뉴스 내용에 맞는 비주얼)`,
   //   viralTag: "TAG",
   //   viralHook: "바이럴 훅",
   //   duration: SCENE_DUR,

@@ -48,10 +48,22 @@ npx ts-node src/JuknaraBriefing/createReverseLoop.ts
 npx remotion render JuknaraBriefingShort out/JuknaraBriefingShort.mp4
 ```
 
-## 마스터 스타일
-- **캐릭터**: K-아나운서 '태리' — 20대 후반 여성, 네이비 블레이저, 전문적 스타일
-- **배경 스타일**: 한국형 신화 웹툰 / 시네마틱 디지털 잉크 선화
-- **뉴스룸**: NYC Fox News/CNBC 스타일 앵커룸, LED 월, NASDAQ/비트코인 시세
+## 마스터 캐릭터 & 스타일
+
+### 마스터 캐릭터: K-아나운서 '태리 (Taeri)'
+- **외형**: 20대 후반 여성, 긴 생머리(어깨 아래), 핑크(로즈) 블레이저 + 화이트 블라우스
+- **성격**: 자신감 있고 친근한 뉴스 앵커, 날카로운 눈매, 다이나믹한 감정 표현
+- **레퍼런스 이미지**: `public/images/character/taeri-master.png`
+
+### ⚠️ 캐릭터 등장 규칙 (중요!)
+- **Opening/Closing**: 태리(마스터 캐릭터)가 반드시 등장 (뉴스룸 배경)
+- **Body**: 태리가 절대 등장하지 않음. 뉴스 내용에 맞는 비주얼만 표시
+  - Body에 등장하는 랜덤 캐릭터는 마스터 디자인 가이드(웹툰 스타일)를 따름
+  - 태리와 구별되는 다른 인물이어야 함
+
+### 배경 스타일
+- **렌더링**: 한국형 신화 웹툰 / 시네마틱 디지털 잉크 선화
+- **뉴스룸**: NYC Fox News/CNBC 스타일 앵커룸, LED 월, NASDAQ/비트코인 시세, 서울 시계
 
 ## 본문 비주얼 서브 스타일 (4종)
 | 타입 | 이름 | 적용 대상 | 핵심 컬러 |
@@ -81,6 +93,8 @@ npx remotion render JuknaraBriefingShort out/JuknaraBriefingShort.mp4
 ## 새 영상 제작 시
 1. `script-short.ts`의 `SCENE_SCRIPTS` 배열 수정 (Opening/Body들/Closing)
 2. `script-short.ts`의 `SCRIPT_SHORT` 배열 수정 (sceneType, bodySubStyle 지정)
+   - Opening/Closing: `imagePrompt`에 `${CHAR} ${STYLE}` 사용 (태리 포함)
+   - Body: `imagePrompt`에 `${STYLE}` 만 사용 (태리 미포함, 뉴스 비주얼만)
 3. `generateTTS-timing.py`의 `SCENE_SCRIPTS`, `SCENE_TITLES` 복사
 4. `Root.tsx`의 `durationInFrames` 조정 (TTS 생성 후 자동)
 5. `./produce-short.sh` 실행
