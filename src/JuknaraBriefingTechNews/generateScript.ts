@@ -11,7 +11,7 @@
  * ⚠️ 나레이션 텍스트는 요약/재작성 없이 원본 그대로 사용합니다.
  *
  * 사용법:
- *   npx ts-node src/StickFigureEconomics/generateScript.ts --file input.txt
+ *   npx ts-node src/JuknaraBriefing/generateScript.ts --file input.txt
  */
 
 import fs from "fs";
@@ -256,7 +256,7 @@ export const FULL_NARRATION = SCRIPT.map((ch) => ch.script).join("\\n\\n");
   const ttsPyContent = `#!/usr/bin/env python3
 """
 Edge TTS 나레이션 오디오 생성기
-사용법: python3 src/StickFigureEconomics/generateTTS.py
+사용법: python3 src/JuknaraBriefing/generateTTS.py
 """
 
 import asyncio

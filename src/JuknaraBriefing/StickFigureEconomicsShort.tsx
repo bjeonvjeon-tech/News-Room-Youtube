@@ -297,7 +297,7 @@ export const StickFigureEconomicsShort: React.FC = () => {
           scenes-short.json 없음
         </div>
         <div style={{ fontSize: 24, opacity: 0.7 }}>
-          python3 src/StickFigureEconomics/generateTTS-timing.py 실행 필요
+          python3 src/JuknaraBriefing/generateTTS-timing.py 실행 필요
         </div>
       </AbsoluteFill>
     );

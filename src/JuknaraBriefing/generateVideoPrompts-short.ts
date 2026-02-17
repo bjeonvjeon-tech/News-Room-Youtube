@@ -7,7 +7,7 @@
  *
  * 출력: videoPrompts-short.json
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateVideoPrompts-short.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateVideoPrompts-short.ts
  */
 
 import fs from "fs";

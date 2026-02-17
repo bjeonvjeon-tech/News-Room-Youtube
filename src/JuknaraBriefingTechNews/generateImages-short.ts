@@ -1,7 +1,7 @@
 /**
  * NanoBanana (Gemini) 이미지 생성 스크립트 (숏폼용 9:16)
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateImages-short.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateImages-short.ts
  *
  * ⚠️ 고정 포맷:
  *   - 비율: 9:16 portrait (1080x1920)

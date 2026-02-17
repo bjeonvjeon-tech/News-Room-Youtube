@@ -1,10 +1,10 @@
 import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { StickFigureEconomics } from "./StickFigureEconomics/StickFigureEconomics";
-import { StickFigureEconomicsShort } from "./StickFigureEconomics/StickFigureEconomicsShort";
-import { CyberpunkTechNews } from "./CyberpunkTechNews/CyberpunkTechNews";
-import { CyberpunkTechNewsShort } from "./CyberpunkTechNews/CyberpunkTechNewsShort";
+import { StickFigureEconomics } from "./JuknaraBriefing/StickFigureEconomics";
+import { StickFigureEconomicsShort } from "./JuknaraBriefing/StickFigureEconomicsShort";
+import { CyberpunkTechNews } from "./JuknaraBriefingTechNews/CyberpunkTechNews";
+import { CyberpunkTechNewsShort } from "./JuknaraBriefingTechNews/CyberpunkTechNewsShort";
 
 // Each <Composition> is an entry in the sidebar!
 

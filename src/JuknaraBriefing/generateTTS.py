@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Edge TTS 나레이션 오디오 생성기
-사용법: python3 src/StickFigureEconomics/generateTTS.py
+사용법: python3 src/JuknaraBriefing/generateTTS.py
 """
 
 import asyncio

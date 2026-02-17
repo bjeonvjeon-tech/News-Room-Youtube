@@ -10,7 +10,7 @@
  *   - 해상도: 720p
  *   - 클립 길이: 8초
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateVideos-short.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateVideos-short.ts
  */
 
 import fs from "fs";

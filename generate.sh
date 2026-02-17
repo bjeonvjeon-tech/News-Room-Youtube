@@ -5,12 +5,12 @@
 #
 # 새로운 주제로 영상을 만드는 방법:
 #
-# 1. src/StickFigureEconomics/script.ts 수정:
+# 1. src/JuknaraBriefing/script.ts 수정:
 #    - TOPIC, TITLE 변경
 #    - SCRIPT 배열에 6개의 Chapter 작성
 #      (각 chapter: id, title, script, imagePrompt, duration=250)
 #
-# 2. src/StickFigureEconomics/generateTTS.py 수정:
+# 2. src/JuknaraBriefing/generateTTS.py 수정:
 #    - FULL_SCRIPT 변수를 script.ts의 나레이션과 동기화
 #
 # 3. 이 스크립트 실행:
@@ -32,12 +32,12 @@ cd "$(dirname "$0")"
 # Step 1: TTS 오디오 생성
 echo ""
 echo "[1/3] TTS 나레이션 생성 중..."
-python3 src/StickFigureEconomics/generateTTS.py
+python3 src/JuknaraBriefing/generateTTS.py
 
 # Step 2: 이미지 생성
 echo ""
 echo "[2/3] Stick Figure 이미지 생성 중..."
-npx ts-node src/StickFigureEconomics/generateImages.ts
+npx ts-node src/JuknaraBriefing/generateImages.ts
 
 # Step 3: Remotion Studio 실행
 echo ""

@@ -1,16 +1,14 @@
 #!/usr/bin/env npx ts-node
 /**
- * 숏폼 오디오 클립 메타데이터 생성 스크립트
+ * 오디오 클립 분할 스크립트
  *
- * full_narration_short.mp3의 길이를 측정하여
- * 8초 단위 클립 메타데이터(clips-short.json)를 생성합니다.
+ * full_narration.mp3를 max 8초 단위로 분할하여
+ * public/audio/clips/ 폴더에 clip001.mp3, clip002.mp3, ... 로 저장합니다.
  *
- * ⚠️ 실제 오디오 파일 분할은 하지 않습니다 (ffmpeg 불필요).
- *    Veo 비디오 생성에는 메타데이터만 필요합니다.
+ * 출력: clips.json (각 클립의 시작/끝 시간, 파일명 메타데이터)
  *
- * 출력: clips-short.json (각 클립의 시작/끝 시간 메타데이터)
- *
- * 사용법: npx ts-node src/StickFigureEconomics/splitAudio-short.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/splitAudio.ts
+ * 의존성: ffmpeg (시스템에 설치되어 있어야 함)
  */
 
 import { execSync } from "child_process";
@@ -19,22 +17,23 @@ import path from "path";
 
 const CLIP_DURATION = 8; // seconds — Veo 3.1 max duration
 const AUDIO_DIR = path.join(__dirname, "../../public/audio");
-const INPUT_FILE = path.join(AUDIO_DIR, "full_narration_short.mp3");
-const OUTPUT_JSON = path.join(__dirname, "clips-short.json");
+const CLIP_DIR = path.join(AUDIO_DIR, "clips");
+const INPUT_FILE = path.join(AUDIO_DIR, "full_narration.mp3");
+const OUTPUT_JSON = path.join(__dirname, "clips.json");
 
-export interface AudioClipShort {
+export interface AudioClip {
   id: string;        // "clip001", "clip002", ...
   index: number;     // 0-based
-  file: string;      // "clips-short/clip001.mp3" (reference only)
-  startSec: number;
-  endSec: number;
+  file: string;      // "clips/clip001.mp3"
+  startSec: number;  // start time in seconds
+  endSec: number;    // end time in seconds
   durationSec: number;
   durationFrames: number; // at 30fps
 }
 
 function getAudioDuration(filePath: string): number {
-  // Try afinfo first (macOS built-in)
   try {
+    // macOS afinfo
     const output = execSync(`afinfo "${filePath}" 2>/dev/null`, {
       encoding: "utf-8",
     });
@@ -42,8 +41,8 @@ function getAudioDuration(filePath: string): number {
     if (match) return parseFloat(match[1]);
   } catch {}
 
-  // Fallback: ffprobe
   try {
+    // fallback: ffprobe
     const output = execSync(
       `ffprobe -i "${filePath}" -show_entries format=duration -v quiet -of csv="p=0"`,
       { encoding: "utf-8" }
@@ -60,26 +59,42 @@ async function main() {
     process.exit(1);
   }
 
+  // Clean & create clip directory
+  if (fs.existsSync(CLIP_DIR)) {
+    fs.rmSync(CLIP_DIR, { recursive: true });
+  }
+  fs.mkdirSync(CLIP_DIR, { recursive: true });
+
+  // Get total duration
   const totalDuration = getAudioDuration(INPUT_FILE);
   const clipCount = Math.ceil(totalDuration / CLIP_DURATION);
 
-  console.log(`\n✂️  숏폼 오디오 클립 메타데이터 생성`);
+  console.log(`\n✂️  오디오 클립 분할 시작`);
   console.log(`📊 전체 길이: ${totalDuration.toFixed(1)}초`);
   console.log(`📊 클립 단위: ${CLIP_DURATION}초`);
-  console.log(`📊 총 클립 수: ${clipCount}개\n`);
+  console.log(`📊 총 클립 수: ${clipCount}개`);
+  console.log(`📁 출력: ${CLIP_DIR}\n`);
 
-  const clips: AudioClipShort[] = [];
+  const clips: AudioClip[] = [];
 
   for (let i = 0; i < clipCount; i++) {
     const startSec = i * CLIP_DURATION;
     const endSec = Math.min((i + 1) * CLIP_DURATION, totalDuration);
     const durationSec = endSec - startSec;
     const id = `clip${String(i + 1).padStart(3, "0")}`;
+    const fileName = `${id}.mp3`;
+    const outputPath = path.join(CLIP_DIR, fileName);
 
-    const clip: AudioClipShort = {
+    // ffmpeg split
+    execSync(
+      `ffmpeg -y -i "${INPUT_FILE}" -ss ${startSec} -t ${durationSec} -acodec copy "${outputPath}" 2>/dev/null`,
+      { encoding: "utf-8" }
+    );
+
+    const clip: AudioClip = {
       id,
       index: i,
-      file: `clips-short/${id}.mp3`,
+      file: `clips/${fileName}`,
       startSec,
       endSec,
       durationSec,
@@ -92,8 +107,9 @@ async function main() {
     );
   }
 
+  // Save metadata
   fs.writeFileSync(OUTPUT_JSON, JSON.stringify(clips, null, 2));
-  console.log(`\n📋 clips-short.json 저장 완료 (${clips.length}개 클립)`);
+  console.log(`\n📋 clips.json 저장 완료 (${clips.length}개 클립)`);
   console.log(`📁 ${OUTPUT_JSON}\n`);
 }
 

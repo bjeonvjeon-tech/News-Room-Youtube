@@ -8,7 +8,7 @@
  * 파이프라인:
  *   splitAudio.ts → generateVideoPrompts.ts → [이 스크립트] → Remotion render
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateVideos.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateVideos.ts
  */
 
 import fs from "fs";

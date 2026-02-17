@@ -5,7 +5,7 @@
 
 ## 핵심 파일 구조
 ```
-src/StickFigureEconomics/
+src/JuknaraBriefing/
 ├── script-short.ts          # 스크립트 + 캐릭터/스타일 정의 (CHAR, STYLE 변수)
 ├── generateTTS-short.py     # TTS 생성 (Edge TTS)
 ├── scenes-short.json        # 씬 타이밍 + 프롬프트
@@ -17,13 +17,13 @@ src/StickFigureEconomics/
 ## 실행 순서
 ```bash
 # 1. TTS 생성 (generateTTS-short.py의 FULL_SCRIPT 수정 후)
-python3 src/StickFigureEconomics/generateTTS-short.py
+python3 src/JuknaraBriefing/generateTTS-short.py
 
 # 2. 이미지 생성 (Gemini, 무료)
-npx ts-node src/StickFigureEconomics/generateSceneImages.ts
+npx ts-node src/JuknaraBriefing/generateSceneImages.ts
 
 # 3. I2V 비디오 생성 (Wan 2.5, $2.00)
-npx ts-node src/StickFigureEconomics/generateVideos-i2v.ts
+npx ts-node src/JuknaraBriefing/generateVideos-i2v.ts
 
 # 4. 최종 렌더링
 npx remotion render StickFigureEconomicsShort out/[filename].mp4

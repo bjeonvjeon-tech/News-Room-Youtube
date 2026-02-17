@@ -15,7 +15,7 @@
  *   - scenes-short.json (장면 정의 + 타이밍)
  *   - 콘솔에 Flow용 프롬프트 출력 (복사용)
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateScenePrompts-short.ts
+ * 사용법: npx ts-node src/JuknaraBriefingTechNews/generateScenePrompts-short.ts
  */
 
 import fs from "fs";
@@ -38,26 +38,27 @@ const AUDIO_FILE = path.join(__dirname, "../../public/audio/full_narration_short
  * Flow에서 스타일 일관성을 위해 필수
  */
 const MASTER_STYLE = `Cinematic 9:16 vertical video, consistent visual style throughout:
-soft muted color palette (warm beige, cream white, charcoal gray, subtle gold accents),
-gentle film grain texture, shallow depth of field, soft diffused lighting like golden hour,
-smooth slow camera movements, elegant minimalist aesthetic,
-professional documentary feel, no text or UI elements on screen.`;
+cyberpunk neon color palette (vibrant cyan, hot pink, deep purple, electric blue),
+dark atmospheric backgrounds with rain and fog, high contrast neon lighting,
+smooth cinematic camera movements, futuristic sci-fi aesthetic,
+Blade Runner inspired atmosphere, no text or UI elements on screen.`;
 
 /**
  * 주인공 캐릭터 정의 — 레이 달리오 대역
  * 모든 장면에서 동일한 외형 유지
  */
-const PROTAGONIST = `a distinguished elderly man in his early 70s with silver-gray hair,
-wearing thin-framed glasses and a perfectly tailored navy blue suit with a subtle gray tie,
-calm confident expression, wise and thoughtful demeanor`;
+const PROTAGONIST = `a futuristic humanoid robot with glowing cyan LED eyes,
+sleek metallic chrome body with neon circuit line accents,
+holographic display elements floating around its head and hands,
+standing in dark cyberpunk environments with neon reflections`;
 
 /**
  * 색상 팔레트 — 모든 장면에 적용
  */
 const COLOR_PALETTE = `
-Color palette: warm beige backgrounds, cream white highlights,
-charcoal gray shadows, subtle gold/brass accents,
-occasional deep navy blue, soft warm lighting throughout`;
+Color palette: dark backgrounds (#0a0a1a), vibrant neon cyan (#00ffff) highlights,
+hot pink (#ff00ff) accents, electric purple (#8b00ff) secondary,
+deep blue shadows, high contrast neon lighting throughout`;
 
 /**
  * 카메라 움직임 옵션 — 장면별로 선택 적용
@@ -134,7 +135,7 @@ async function main() {
   console.log(`📝 주제: ${TOPIC}`);
   console.log(`📝 제목: ${TITLE}`);
   console.log(`⏱️  총 길이: ${totalDuration.toFixed(1)}초`);
-  console.log(`🎨 스타일: Cinematic Documentary\n`);
+  console.log(`🎨 스타일: Cyberpunk Neon\n`);
 
   // Gemini에게 10개 장면 분석 요청
   const analysisPrompt = `You are a video storyboard director. Analyze this Korean narration script and divide it into exactly 10 visual scenes for a short-form video.

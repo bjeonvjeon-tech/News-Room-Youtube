@@ -175,7 +175,7 @@ async function main() {
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   if (success + skipped === scenes.length) {
     console.log("🎉 모든 이미지 생성 완료!");
-    console.log("   다음: npx ts-node src/CyberpunkTechNews/generateVideos-i2v.ts");
+    console.log("   다음: npx ts-node src/JuknaraBriefingTechNews/generateVideos-i2v.ts");
   }
 }
 

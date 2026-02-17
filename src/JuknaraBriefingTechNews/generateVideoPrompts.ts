@@ -14,7 +14,7 @@
  *   4. Gemini에게 해당 나레이션 → 영상 프롬프트 변환 요청
  *   5. videoPrompts.json 저장
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateVideoPrompts.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateVideoPrompts.ts
  */
 
 import fs from "fs";

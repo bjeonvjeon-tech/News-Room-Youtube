@@ -4,7 +4,7 @@
  * 모델: gemini-2.5-pro
  * API: Google Generative Language API v1beta
  *
- * 사용법: npx ts-node src/StickFigureEconomics/generateImages.ts
+ * 사용법: npx ts-node src/JuknaraBriefing/generateImages.ts
  *
  * script.ts의 각 챕터 imagePrompt를 사용해 이미지를 생성하고
  * public/images/ 폴더에 저장합니다.
