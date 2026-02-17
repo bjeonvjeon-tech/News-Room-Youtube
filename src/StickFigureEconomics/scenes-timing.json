@@ -1,0 +1,462 @@
+{
+  "version": "1.0",
+  "totalDurationSec": 74.712,
+  "totalFrames": 2241,
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "scene01",
+      "index": 0,
+      "title": "중국 AI 폭격",
+      "description": "중국이 이번 주에 AI 모델 3개를 동시에 쏟아냈습니다. 구글 딥마인드 CEO가 말했죠, \"중국은 불과 몇 달 뒤에 있다.\"",
+      "startSec": 0.0,
+      "endSec": 8.136,
+      "durationSec": 8.136,
+      "startFrame": 0,
+      "endFrame": 244,
+      "durationFrames": 244,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene01.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 8.136,
+      "audioFile": "clips-short/scene01.mp3",
+      "sentences": [
+        {
+          "text": "중국이 이번 주에 AI 모델 3개를 동시에 쏟아냈습니다.",
+          "startSec": 0,
+          "endSec": 2.712,
+          "durationSec": 2.712
+        },
+        {
+          "text": "구글 딥마인드 CEO가 말했죠, \"중국은 불과 몇 달 뒤에 있다.",
+          "startSec": 2.712,
+          "endSec": 5.424,
+          "durationSec": 2.712
+        },
+        {
+          "text": "\"",
+          "startSec": 5.424,
+          "endSec": 8.136,
+          "durationSec": 2.712
+        }
+      ]
+    },
+    {
+      "id": "scene02",
+      "index": 1,
+      "title": "알리바바 RynnBrain",
+      "description": "먼저 알리바바입니다. 로봇 두뇌 'RynnBrain'을 공개했는데요, 물건을 알아보고, 집어서, 바구니에 넣습니다.",
+      "startSec": 8.136,
+      "endSec": 16.8,
+      "durationSec": 8.664,
+      "startFrame": 244,
+      "endFrame": 503,
+      "durationFrames": 259,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene02.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 8.664,
+      "audioFile": "clips-short/scene02.mp3",
+      "sentences": [
+        {
+          "text": "먼저 알리바바입니다.",
+          "startSec": 0,
+          "endSec": 4.332,
+          "durationSec": 4.332
+        },
+        {
+          "text": "로봇 두뇌 'RynnBrain'을 공개했는데요, 물건을 알아보고, 집어서, 바구니에 넣습니다.",
+          "startSec": 4.332,
+          "endSec": 8.664,
+          "durationSec": 4.332
+        }
+      ]
+    },
+    {
+      "id": "scene03",
+      "index": 2,
+      "title": "벤치마크 압승",
+      "description": "구글 제미니 로보틱스, 엔비디아 코스모스를 16개의 benchmark에서 다 이겼어요. 게다가 오픈소스로 무료 공개했구요.",
+      "startSec": 16.8,
+      "endSec": 25.44,
+      "durationSec": 8.64,
+      "startFrame": 503,
+      "endFrame": 763,
+      "durationFrames": 259,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene03.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 8.64,
+      "audioFile": "clips-short/scene03.mp3",
+      "sentences": [
+        {
+          "text": "구글 제미니 로보틱스, 엔비디아 코스모스를 16개의 benchmark에서 다 이겼어요.",
+          "startSec": 0,
+          "endSec": 4.32,
+          "durationSec": 4.32
+        },
+        {
+          "text": "게다가 오픈소스로 무료 공개했구요.",
+          "startSec": 4.32,
+          "endSec": 8.64,
+          "durationSec": 4.32
+        }
+      ]
+    },
+    {
+      "id": "scene04",
+      "index": 3,
+      "title": "바이트댄스 Seedance",
+      "description": "다음은 바이트댄스. 영상 생성 AI 'Seedance' 인데, 텍스트·이미지·영상·음성을 동시에 입력하면 2K 영상을 만들어줍니다.",
+      "startSec": 25.44,
+      "endSec": 34.776,
+      "durationSec": 9.336,
+      "startFrame": 763,
+      "endFrame": 1043,
+      "durationFrames": 280,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene04.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 9.336,
+      "audioFile": "clips-short/scene04.mp3",
+      "sentences": [
+        {
+          "text": "다음은 바이트댄스.",
+          "startSec": 0,
+          "endSec": 4.668,
+          "durationSec": 4.668
+        },
+        {
+          "text": "영상 생성 AI 'Seedance' 인데, 텍스트·이미지·영상·음성을 동시에 입력하면 2K 영상을 만들어줍니다.",
+          "startSec": 4.668,
+          "endSec": 9.336,
+          "durationSec": 4.668
+        }
+      ]
+    },
+    {
+      "id": "scene05",
+      "index": 4,
+      "title": "제2의 딥시크",
+      "description": "중국에서는 \"제2의 딥시크\"라는 말까지 나왔어요.",
+      "startSec": 34.776,
+      "endSec": 38.616,
+      "durationSec": 3.84,
+      "startFrame": 1043,
+      "endFrame": 1158,
+      "durationFrames": 115,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene05.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 3.84,
+      "audioFile": "clips-short/scene05.mp3",
+      "sentences": [
+        {
+          "text": "중국에서는 \"제2의 딥시크\"라는 말까지 나왔어요.",
+          "startSec": 0,
+          "endSec": 3.84,
+          "durationSec": 3.84
+        }
+      ]
+    },
+    {
+      "id": "scene06",
+      "index": 5,
+      "title": "한국 영향 - 로봇",
+      "description": "이게 한국에 왜 중요하냐면요, 첫째, 로봇입니다. 현대·삼성이 휴머노이드 로봇에 투자 중인데, 중국이 AI 두뇌를 오픈소스로 풀어버리면 가격 경쟁력에서 밀릴 수 있어요.",
+      "startSec": 38.616,
+      "endSec": 50.592,
+      "durationSec": 11.976,
+      "startFrame": 1158,
+      "endFrame": 1517,
+      "durationFrames": 359,
+      "playbackMode": "loop",
+      "videoFile": "scenes-extended/scene06.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": false,
+      "truncateDuration": 11.976,
+      "audioFile": "clips-short/scene06.mp3",
+      "sentences": [
+        {
+          "text": "이게 한국에 왜 중요하냐면요, 첫째, 로봇입니다.",
+          "startSec": 0,
+          "endSec": 5.988,
+          "durationSec": 5.988
+        },
+        {
+          "text": "현대·삼성이 휴머노이드 로봇에 투자 중인데, 중국이 AI 두뇌를 오픈소스로 풀어버리면 가격 경쟁력에서 밀릴 수 있어요.",
+          "startSec": 5.988,
+          "endSec": 11.976,
+          "durationSec": 5.988
+        }
+      ]
+    },
+    {
+      "id": "scene07",
+      "index": 6,
+      "title": "한국 영향 - 콘텐츠",
+      "description": "둘째, 콘텐츠예요. 한국 광고·영상 업계가 영상 AI 도입을 준비 중인데, Seedance 가 Sora 보다 싸고 빠르면 판이 바뀝니다.",
+      "startSec": 50.592,
+      "endSec": 60.216,
+      "durationSec": 9.624,
+      "startFrame": 1517,
+      "endFrame": 1806,
+      "durationFrames": 288,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene07.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 9.624,
+      "audioFile": "clips-short/scene07.mp3",
+      "sentences": [
+        {
+          "text": "둘째, 콘텐츠예요.",
+          "startSec": 0,
+          "endSec": 4.812,
+          "durationSec": 4.812
+        },
+        {
+          "text": "한국 광고·영상 업계가 영상 AI 도입을 준비 중인데, Seedance 가 Sora 보다 싸고 빠르면 판이 바뀝니다.",
+          "startSec": 4.812,
+          "endSec": 9.624,
+          "durationSec": 4.812
+        }
+      ]
+    },
+    {
+      "id": "scene08",
+      "index": 7,
+      "title": "한국 영향 - 반도체",
+      "description": "셋째, 반도체입니다. 중국이 미국 칩 제재 속에서도 이런 모델을 내놓는다는 건, SK하이닉스 AI 메모리 수요 구조에도 영향을 줄 수 있거든요.",
+      "startSec": 60.216,
+      "endSec": 69.888,
+      "durationSec": 9.672,
+      "startFrame": 1806,
+      "endFrame": 2096,
+      "durationFrames": 290,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene08.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 9.672,
+      "audioFile": "clips-short/scene08.mp3",
+      "sentences": [
+        {
+          "text": "셋째, 반도체입니다.",
+          "startSec": 0,
+          "endSec": 4.836,
+          "durationSec": 4.836
+        },
+        {
+          "text": "중국이 미국 칩 제재 속에서도 이런 모델을 내놓는다는 건, SK하이닉스 AI 메모리 수요 구조에도 영향을 줄 수 있거든요.",
+          "startSec": 4.836,
+          "endSec": 9.672,
+          "durationSec": 4.836
+        }
+      ]
+    },
+    {
+      "id": "scene09",
+      "index": 8,
+      "title": "한국의 위치",
+      "description": "AI 전쟁, 미국 vs 중국 사이에서 한국은 어디쯤 있을까요?",
+      "startSec": 69.888,
+      "endSec": 74.712,
+      "durationSec": 4.824,
+      "startFrame": 2096,
+      "endFrame": 2241,
+      "durationFrames": 144,
+      "playbackMode": "truncate",
+      "videoFile": "scenes-extended/scene09.mp4",
+      "videoDuration": 10.0,
+      "needsTruncate": true,
+      "truncateDuration": 4.824,
+      "audioFile": "clips-short/scene09.mp3",
+      "sentences": [
+        {
+          "text": "AI 전쟁, 미국 vs 중국 사이에서 한국은 어디쯤 있을까요?",
+          "startSec": 0,
+          "endSec": 4.824,
+          "durationSec": 4.824
+        }
+      ]
+    }
+  ],
+  "sentenceTimings": [
+    {
+      "sceneId": "scene01",
+      "sceneIndex": 0,
+      "text": "중국이 이번 주에 AI 모델 3개를 동시에 쏟아냈습니다.",
+      "absoluteStartSec": 0.0,
+      "absoluteEndSec": 2.712,
+      "relativeStartSec": 0,
+      "relativeEndSec": 2.712,
+      "durationSec": 2.712
+    },
+    {
+      "sceneId": "scene01",
+      "sceneIndex": 0,
+      "text": "구글 딥마인드 CEO가 말했죠, \"중국은 불과 몇 달 뒤에 있다.",
+      "absoluteStartSec": 2.712,
+      "absoluteEndSec": 5.424,
+      "relativeStartSec": 2.712,
+      "relativeEndSec": 5.424,
+      "durationSec": 2.712
+    },
+    {
+      "sceneId": "scene01",
+      "sceneIndex": 0,
+      "text": "\"",
+      "absoluteStartSec": 5.424,
+      "absoluteEndSec": 8.136,
+      "relativeStartSec": 5.424,
+      "relativeEndSec": 8.136,
+      "durationSec": 2.712
+    },
+    {
+      "sceneId": "scene02",
+      "sceneIndex": 1,
+      "text": "먼저 알리바바입니다.",
+      "absoluteStartSec": 8.136,
+      "absoluteEndSec": 12.468,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.332,
+      "durationSec": 4.332
+    },
+    {
+      "sceneId": "scene02",
+      "sceneIndex": 1,
+      "text": "로봇 두뇌 'RynnBrain'을 공개했는데요, 물건을 알아보고, 집어서, 바구니에 넣습니다.",
+      "absoluteStartSec": 12.468,
+      "absoluteEndSec": 16.8,
+      "relativeStartSec": 4.332,
+      "relativeEndSec": 8.664,
+      "durationSec": 4.332
+    },
+    {
+      "sceneId": "scene03",
+      "sceneIndex": 2,
+      "text": "구글 제미니 로보틱스, 엔비디아 코스모스를 16개의 benchmark에서 다 이겼어요.",
+      "absoluteStartSec": 16.8,
+      "absoluteEndSec": 21.12,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.32,
+      "durationSec": 4.32
+    },
+    {
+      "sceneId": "scene03",
+      "sceneIndex": 2,
+      "text": "게다가 오픈소스로 무료 공개했구요.",
+      "absoluteStartSec": 21.12,
+      "absoluteEndSec": 25.44,
+      "relativeStartSec": 4.32,
+      "relativeEndSec": 8.64,
+      "durationSec": 4.32
+    },
+    {
+      "sceneId": "scene04",
+      "sceneIndex": 3,
+      "text": "다음은 바이트댄스.",
+      "absoluteStartSec": 25.44,
+      "absoluteEndSec": 30.108,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.668,
+      "durationSec": 4.668
+    },
+    {
+      "sceneId": "scene04",
+      "sceneIndex": 3,
+      "text": "영상 생성 AI 'Seedance' 인데, 텍스트·이미지·영상·음성을 동시에 입력하면 2K 영상을 만들어줍니다.",
+      "absoluteStartSec": 30.108,
+      "absoluteEndSec": 34.776,
+      "relativeStartSec": 4.668,
+      "relativeEndSec": 9.336,
+      "durationSec": 4.668
+    },
+    {
+      "sceneId": "scene05",
+      "sceneIndex": 4,
+      "text": "중국에서는 \"제2의 딥시크\"라는 말까지 나왔어요.",
+      "absoluteStartSec": 34.776,
+      "absoluteEndSec": 38.616,
+      "relativeStartSec": 0,
+      "relativeEndSec": 3.84,
+      "durationSec": 3.84
+    },
+    {
+      "sceneId": "scene06",
+      "sceneIndex": 5,
+      "text": "이게 한국에 왜 중요하냐면요, 첫째, 로봇입니다.",
+      "absoluteStartSec": 38.616,
+      "absoluteEndSec": 44.604,
+      "relativeStartSec": 0,
+      "relativeEndSec": 5.988,
+      "durationSec": 5.988
+    },
+    {
+      "sceneId": "scene06",
+      "sceneIndex": 5,
+      "text": "현대·삼성이 휴머노이드 로봇에 투자 중인데, 중국이 AI 두뇌를 오픈소스로 풀어버리면 가격 경쟁력에서 밀릴 수 있어요.",
+      "absoluteStartSec": 44.604,
+      "absoluteEndSec": 50.592,
+      "relativeStartSec": 5.988,
+      "relativeEndSec": 11.976,
+      "durationSec": 5.988
+    },
+    {
+      "sceneId": "scene07",
+      "sceneIndex": 6,
+      "text": "둘째, 콘텐츠예요.",
+      "absoluteStartSec": 50.592,
+      "absoluteEndSec": 55.404,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.812,
+      "durationSec": 4.812
+    },
+    {
+      "sceneId": "scene07",
+      "sceneIndex": 6,
+      "text": "한국 광고·영상 업계가 영상 AI 도입을 준비 중인데, Seedance 가 Sora 보다 싸고 빠르면 판이 바뀝니다.",
+      "absoluteStartSec": 55.404,
+      "absoluteEndSec": 60.216,
+      "relativeStartSec": 4.812,
+      "relativeEndSec": 9.624,
+      "durationSec": 4.812
+    },
+    {
+      "sceneId": "scene08",
+      "sceneIndex": 7,
+      "text": "셋째, 반도체입니다.",
+      "absoluteStartSec": 60.216,
+      "absoluteEndSec": 65.052,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.836,
+      "durationSec": 4.836
+    },
+    {
+      "sceneId": "scene08",
+      "sceneIndex": 7,
+      "text": "중국이 미국 칩 제재 속에서도 이런 모델을 내놓는다는 건, SK하이닉스 AI 메모리 수요 구조에도 영향을 줄 수 있거든요.",
+      "absoluteStartSec": 65.052,
+      "absoluteEndSec": 69.888,
+      "relativeStartSec": 4.836,
+      "relativeEndSec": 9.672,
+      "durationSec": 4.836
+    },
+    {
+      "sceneId": "scene09",
+      "sceneIndex": 8,
+      "text": "AI 전쟁, 미국 vs 중국 사이에서 한국은 어디쯤 있을까요?",
+      "absoluteStartSec": 69.888,
+      "absoluteEndSec": 74.712,
+      "relativeStartSec": 0,
+      "relativeEndSec": 4.824,
+      "durationSec": 4.824
+    }
+  ]
+}

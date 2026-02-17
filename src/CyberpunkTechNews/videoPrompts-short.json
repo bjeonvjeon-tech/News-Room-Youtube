@@ -1,0 +1,74 @@
+[
+  {
+    "clipId": "clip001",
+    "clipIndex": 0,
+    "chapterId": "ch00",
+    "chapterTitle": "650조 투자",
+    "narrationExcerpt": "650조 원. 올해 빅테크 4곳이 AI에 쏟아붓겠다는 돈입니다.",
+    "videoPrompt": "A minimalist, watercolor illustration in 9:16 portrait orientation depicts a serene, soft-focus cityscape Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip002",
+    "clipIndex": 1,
+    "chapterId": "ch01",
+    "chapterTitle": "빅테크 금액",
+    "narrationExcerpt": "마이크로소프트 105조, 메타 135조. 전년 대비 60% 폭증이에요.",
+    "videoPrompt": "A minimalist illustrated scene, rendered in warm watercolor textures with muted neutral tones and subtle mint accents, depicts a Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip003",
+    "clipIndex": 2,
+    "chapterId": "ch02",
+    "chapterTitle": "유례없는 투자",
+    "narrationExcerpt": " 투자라고 했습니다. 이 돈은 거의 전부 데이터센터와 AI 칩에 들어갑니다.",
+    "videoPrompt": "A clean minimalist illustration, rendered with warm watercolor textures and muted neutral tones, featuring a lone humanoid robot with Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip004",
+    "clipIndex": 3,
+    "chapterId": "ch04",
+    "chapterTitle": "반도체 핵심",
+    "narrationExcerpt": "첫째, 반도체입니다. AI 서버에는 HBM 메모리가 필수인데, 삼성과 SK하이닉스가 전 세계 공급을 ",
+    "videoPrompt": "A clean minimalist illustration, rendered with warm watercolor textures and muted neutral tones accented with mint, Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip005",
+    "clipIndex": 4,
+    "chapterId": "ch05",
+    "chapterTitle": "장비 수출",
+    "narrationExcerpt": "둘째, 장비입니다. 데이터센터 건설 붐은 한국 전력장비, 냉각장비 수출로 직결됩니다.",
+    "videoPrompt": "A minimalist illustrated scene, rendered with warm watercolor textures and muted neutral tones accented with subtle mint, opens with Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip006",
+    "clipIndex": 5,
+    "chapterId": "ch06",
+    "chapterTitle": "주가 상승",
+    "narrationExcerpt": "셋째, 주가입니다. 빅테크가 돈을 쓸수록 삼성전자와 SK하이닉스도 동반 상승합니다.",
+    "videoPrompt": "A sleek, stylized humanoid robot, rendered with clean minimalist illustration and warm watercolor textures, stands contemplatively in Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip007",
+    "clipIndex": 6,
+    "chapterId": "ch07",
+    "chapterTitle": "투자자 불안",
+    "narrationExcerpt": "은 오히려 불안합니다. 이번 주 빅테크 시총 9천억 달러가 증발했거든요.",
+    "videoPrompt": "A clean minimalist illustration, presented in 9:16 vertical portrait, depicts a stylized Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 8
+  },
+  {
+    "clipId": "clip008",
+    "clipIndex": 7,
+    "chapterId": "ch08",
+    "chapterTitle": "버블 vs 기회",
+    "narrationExcerpt": " 기회일까요?",
+    "videoPrompt": "A lone futuristic humanoid robot, with glowing LED eyes and a sleek metallic chrome body, stands at a dramatic Cinematic 4K quality, smooth motion, professional lighting. 9:16 vertical portrait composition.",
+    "durationSec": 0.9040000000000035
+  }
+]

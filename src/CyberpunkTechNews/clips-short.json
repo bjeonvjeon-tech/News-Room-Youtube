@@ -1,0 +1,74 @@
+[
+  {
+    "id": "clip001",
+    "index": 0,
+    "file": "clips-short/clip001.mp3",
+    "startSec": 0,
+    "endSec": 8,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip002",
+    "index": 1,
+    "file": "clips-short/clip002.mp3",
+    "startSec": 8,
+    "endSec": 16,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip003",
+    "index": 2,
+    "file": "clips-short/clip003.mp3",
+    "startSec": 16,
+    "endSec": 24,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip004",
+    "index": 3,
+    "file": "clips-short/clip004.mp3",
+    "startSec": 24,
+    "endSec": 32,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip005",
+    "index": 4,
+    "file": "clips-short/clip005.mp3",
+    "startSec": 32,
+    "endSec": 40,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip006",
+    "index": 5,
+    "file": "clips-short/clip006.mp3",
+    "startSec": 40,
+    "endSec": 48,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip007",
+    "index": 6,
+    "file": "clips-short/clip007.mp3",
+    "startSec": 48,
+    "endSec": 56,
+    "durationSec": 8,
+    "durationFrames": 240
+  },
+  {
+    "id": "clip008",
+    "index": 7,
+    "file": "clips-short/clip008.mp3",
+    "startSec": 56,
+    "endSec": 56.904,
+    "durationSec": 0.9040000000000035,
+    "durationFrames": 27
+  }
+]
