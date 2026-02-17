@@ -116,29 +116,49 @@ def split_into_sentences(text: str) -> List[str]:
     return [s.strip() for s in sentences if s.strip()]
 
 
-def determine_video_settings(audio_duration: float) -> Dict:
+def determine_video_settings(audio_duration: float, scene_type: str) -> Dict:
     """
-    오디오 길이에 따라 비디오 설정 결정
+    오디오 길이 + 씬 타입에 따라 비디오 설정 결정
 
-    모든 영상은 먼저 10초 (scenes-extended/)로 확장된 상태.
-    TTS 타이밍에 맞춰 필요한 길이로 truncate.
+    Opening/Closing: 5초 클립을 frame-stitch로 이어붙여 TTS 길이에 맞춤
+                     (마지막 프레임 = 다음 클립 시작 프레임, seamless)
+    Body: 5초 → 10초 reverse-loop 확장 후 truncate/loop
     """
-    if audio_duration <= EXTENDED_VIDEO_DURATION:
+    import math
+
+    if scene_type in ("opening", "closing"):
+        # Frame-stitch: 5초 단위 클립을 이어붙임
+        clips_needed = max(1, math.ceil(audio_duration / VIDEO_DURATION))
+        stitched_duration = clips_needed * VIDEO_DURATION
         return {
             "playbackMode": "truncate",
             "videoFolder": "scenes-extended",
-            "videoDuration": EXTENDED_VIDEO_DURATION,
-            "needsTruncate": True,
-            "truncateDuration": audio_duration
+            "videoDuration": stitched_duration,
+            "needsTruncate": audio_duration < stitched_duration,
+            "truncateDuration": audio_duration,
+            "clipsNeeded": clips_needed,
+            "videoMode": "frame-stitch"
         }
     else:
-        return {
-            "playbackMode": "loop",
-            "videoFolder": "scenes-extended",
-            "videoDuration": EXTENDED_VIDEO_DURATION,
-            "needsTruncate": False,
-            "truncateDuration": audio_duration
-        }
+        # Body: reverse-loop (5초 → 10초)
+        if audio_duration <= EXTENDED_VIDEO_DURATION:
+            return {
+                "playbackMode": "truncate",
+                "videoFolder": "scenes-extended",
+                "videoDuration": EXTENDED_VIDEO_DURATION,
+                "needsTruncate": True,
+                "truncateDuration": audio_duration,
+                "videoMode": "reverse-loop"
+            }
+        else:
+            return {
+                "playbackMode": "loop",
+                "videoFolder": "scenes-extended",
+                "videoDuration": EXTENDED_VIDEO_DURATION,
+                "needsTruncate": False,
+                "truncateDuration": audio_duration,
+                "videoMode": "reverse-loop"
+            }
 
 
 async def generate_tts_with_timing(scene_id: str, script: str) -> Tuple[float, List[Dict]]:
@@ -245,7 +265,7 @@ async def main():
 
         duration, sentence_timings = await generate_tts_with_timing(scene_id, script)
 
-        video_settings = determine_video_settings(duration)
+        video_settings = determine_video_settings(duration, scene_type)
 
         scene = {
             "id": scene_id,
@@ -264,6 +284,8 @@ async def main():
             "videoDuration": video_settings["videoDuration"],
             "needsTruncate": video_settings["needsTruncate"],
             "truncateDuration": video_settings["truncateDuration"],
+            "videoMode": video_settings.get("videoMode", "reverse-loop"),
+            "clipsNeeded": video_settings.get("clipsNeeded", 1),
             "audioFile": f"clips-short/{scene_id}.mp3",
             "sentences": sentence_timings
         }
@@ -282,9 +304,16 @@ async def main():
                 "durationSec": st["durationSec"]
             })
 
-        mode_emoji = {"truncate": "✂️", "loop": "🔄"}[video_settings["playbackMode"]]
-        truncate_info = f"(10초 → {duration:.1f}초)" if video_settings["needsTruncate"] else ""
-        print(f"   ⏱️  {duration:.2f}초 | {mode_emoji} {video_settings['playbackMode']} {truncate_info}")
+        video_mode = video_settings.get("videoMode", "reverse-loop")
+        if video_mode == "frame-stitch":
+            clips = video_settings.get("clipsNeeded", 1)
+            mode_emoji = "🔗"
+            mode_info = f"frame-stitch ({clips}x5초={clips*5}초)"
+        else:
+            mode_emoji = {"truncate": "✂️", "loop": "🔄"}[video_settings["playbackMode"]]
+            mode_info = f"{video_settings['playbackMode']}"
+        truncate_info = f"→ {duration:.1f}초" if video_settings["needsTruncate"] else ""
+        print(f"   ⏱️  {duration:.2f}초 | {mode_emoji} {mode_info} {truncate_info}")
         print(f"   📊 {len(sentence_timings)}개 문장 타이밍 추출")
 
         current_time += duration

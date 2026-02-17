@@ -1,10 +1,11 @@
 #!/bin/bash
-# FFmpeg Reverse Loop 생성기
-# 5초 영상 → 10초 (원본 + 역재생)
+# FFmpeg Reverse Loop 생성기 (Body 씬 전용)
+# Body 씬: 5초 영상 → 10초 (원본 + 역재생)
+# Opening/Closing: 스킵 (frame-stitch 방식으로 이미 처리됨)
 #
 # 사용법:
-#   ./createReverseLoop.sh                    # 모든 씬 처리
-#   ./createReverseLoop.sh scene01            # 특정 씬만 처리
+#   ./createReverseLoop.sh                    # Body 씬만 처리
+#   ./createReverseLoop.sh scene03            # 특정 씬만 처리
 
 set -e
 
@@ -31,16 +32,47 @@ echo "📂 출력: $OUTPUT_DIR"
 echo "🔧 FFmpeg: $FFMPEG"
 echo ""
 
+# scenes-short.json에서 Opening/Closing 씬 ID 추출 (frame-stitch이므로 스킵 대상)
+SCENES_JSON="$SCRIPT_DIR/scenes-short.json"
+SKIP_SCENES=()
+if [ -f "$SCENES_JSON" ] && command -v python3 &> /dev/null; then
+  while IFS= read -r sid; do
+    SKIP_SCENES+=("$sid")
+  done < <(python3 -c "
+import json
+with open('$SCENES_JSON') as f:
+    scenes = json.load(f)
+for s in scenes:
+    if s.get('sceneType') in ('opening', 'closing'):
+        print(s['id'])
+")
+fi
+
+if [ ${#SKIP_SCENES[@]} -gt 0 ]; then
+  echo "⏭️  Opening/Closing 스킵 (frame-stitch): ${SKIP_SCENES[*]}"
+  echo ""
+fi
+
 # 특정 씬만 처리하는 경우
 if [ -n "$1" ]; then
   SCENES=("$1")
 else
-  # 모든 씬 파일 목록
+  # Body 씬 파일 목록 (Opening/Closing 제외)
   SCENES=()
   for file in "$INPUT_DIR"/*.mp4; do
     if [ -f "$file" ]; then
       basename=$(basename "$file" .mp4)
-      SCENES+=("$basename")
+      # Opening/Closing 스킵
+      SKIP=false
+      for skip_id in "${SKIP_SCENES[@]}"; do
+        if [ "$basename" = "$skip_id" ]; then
+          SKIP=true
+          break
+        fi
+      done
+      if [ "$SKIP" = false ]; then
+        SCENES+=("$basename")
+      fi
     fi
   done
 fi

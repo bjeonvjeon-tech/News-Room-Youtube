@@ -5,9 +5,12 @@
 한국형 신화 웹툰(만화) 스타일의 시네마틱 디지털 잉크 선화.
 
 ## 영상 구조 (3파트)
-1. **Opening (The Hook)** — 10초 이내: 뉴스룸 앵커 등장, BREAKING NEWS 바
+1. **Opening (The Hook)** — 뉴스룸 앵커 등장, BREAKING NEWS 바
+   - 비디오: frame-stitch (5초 클립 이어붙이기, seamless) → Kling lipsync
 2. **Body (Visual Insight)** — 본문: 전체화면 애니메이션 (4가지 서브 스타일)
-3. **Closing (The Impact)** — 10초 이내: 뉴스룸 복귀, 체크리스트 자막
+   - 비디오: 5초 I2V → reverse-loop으로 10초 확장
+3. **Closing (The Impact)** — 뉴스룸 복귀, 체크리스트 자막
+   - 비디오: Opening과 동일 (frame-stitch → Kling lipsync)
 
 ## 핵심 파일 구조
 ```
@@ -17,8 +20,8 @@ src/JuknaraBriefing/
 ├── scenes-short.json            # 씬 타이밍 + 프롬프트 (SSOT)
 ├── generateScenePrompts-short.ts # 씬 프롬프트 생성 (Gemini + 4가지 서브 스타일)
 ├── generateSceneImages.ts       # Gemini 3 Pro 이미지 생성 (I2V용)
-├── generateVideos-i2v.ts        # Wan 2.5 I2V 비디오 생성
-├── createReverseLoop.ts/.sh     # 5초 → 10초 확장
+├── generateVideos-i2v.ts        # Wan 2.5 I2V (Opening/Closing: frame-stitch, Body: 단일 5초)
+├── createReverseLoop.ts/.sh     # Body만 5초 → 10초 reverse-loop 확장
 ├── JuknaraBriefingShort.tsx     # Remotion 렌더링 컴포넌트 (뉴스룸 UI)
 └── ChapterSceneShort.tsx        # 개별 씬 컴포넌트
 ```
@@ -36,10 +39,12 @@ python3 src/JuknaraBriefing/generateTTS-timing.py
 # 2. 씬 이미지 생성 (Gemini, 무료)
 npx ts-node src/JuknaraBriefing/generateSceneImages.ts
 
-# 3. I2V 비디오 생성 (Wan 2.5, $2.00)
+# 3. I2V 비디오 생성 (Wan 2.5)
+#    - Opening/Closing: frame-stitch (5초 클립 이어붙이기) → scenes-extended/
+#    - Body: 단일 5초 클립 → scenes/
 npx ts-node src/JuknaraBriefing/generateVideos-i2v.ts
 
-# 4. 10초 reverse-loop 확장
+# 4. Body만 reverse-loop 확장 (5초 → 10초)
 npx ts-node src/JuknaraBriefing/createReverseLoop.ts
 
 # 5. (선택) Kling lipsync — Opening/Closing
@@ -87,8 +92,9 @@ npx remotion render JuknaraBriefingShort out/JuknaraBriefingShort.mp4
 ## 비용
 - TTS: 무료 (Edge TTS)
 - 이미지: 무료 (Gemini 3 Pro)
-- 비디오: ~$2.00 (Wan 2.5 I2V, 씬 수 × $0.20)
-- **총 비용: ~$2.00/영상**
+- 비디오 Body: 씬 수 × $0.20 (Wan 2.5 I2V, 5초 단일 클립)
+- 비디오 Opening/Closing: 클립 수 × $0.20 (frame-stitch, TTS 길이에 따라 복수 클립)
+- **총 비용: ~$3.00~4.00/영상** (Opening/Closing frame-stitch 추가분 포함)
 
 ## 새 영상 제작 시
 1. `script-short.ts`의 `SCENE_SCRIPTS` 배열 수정 (Opening/Body들/Closing)

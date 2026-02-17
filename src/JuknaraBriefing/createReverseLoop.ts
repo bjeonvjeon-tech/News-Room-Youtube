@@ -2,12 +2,11 @@
 /**
  * FFmpeg Reverse Loop 생성기 (TypeScript 버전)
  *
- * 5초 영상 → 10초 (원본 + 역재생)
+ * Body 씬만 처리: 5초 영상 → 10초 (원본 + 역재생)
+ * Opening/Closing은 frame-stitch 방식으로 이미 scenes-extended/에 있으므로 스킵
  *
  * Remotion의 FFmpeg는 reverse 필터가 비활성화되어 있으므로,
  * 시스템 FFmpeg 또는 별도 설치가 필요합니다.
- *
- * 대안: 프레임 기반 역재생 구현
  */
 
 import * as fs from "fs";
@@ -22,6 +21,8 @@ interface SceneInfo {
   id: string;
   durationSec: number;
   playbackMode: string;
+  sceneType?: "opening" | "body" | "closing";
+  videoMode?: "frame-stitch" | "reverse-loop";
 }
 
 /**
@@ -140,14 +141,26 @@ async function main() {
     }));
   }
 
-  // reverse-loop 또는 5~10초 씬만 처리
+  // Body 씬만 reverse-loop 처리
+  // Opening/Closing은 frame-stitch로 이미 scenes-extended/에 있음
   const targetScenes = scenes.filter(
     (s) =>
-      s.playbackMode === "reverse-loop" ||
-      (s.durationSec > 5 && s.durationSec <= 10)
+      s.sceneType !== "opening" &&
+      s.sceneType !== "closing" &&
+      s.videoMode !== "frame-stitch" &&
+      (s.playbackMode === "reverse-loop" ||
+        s.playbackMode === "truncate" ||
+        s.playbackMode === "loop" ||
+        (s.durationSec > 5 && s.durationSec <= 10))
   );
 
-  console.log(`\n📝 ${targetScenes.length}개 씬 처리 예정 (reverse-loop)`);
+  const skippedStitch = scenes.filter(
+    (s) => s.sceneType === "opening" || s.sceneType === "closing"
+  );
+  if (skippedStitch.length > 0) {
+    console.log(`\n⏭️  Opening/Closing ${skippedStitch.length}개 스킵 (frame-stitch 방식, 이미 처리됨)`);
+  }
+  console.log(`📝 ${targetScenes.length}개 Body 씬 처리 예정 (reverse-loop)`);
   console.log(`📂 입력: ${INPUT_DIR}`);
   console.log(`📂 출력: ${OUTPUT_DIR}\n`);
 

@@ -26,8 +26,10 @@
 #   1. Edge TTS (SSOT 타이밍) → clips-short/ + scenes-short.json
 #   2. 오디오 길이 측정 → script-short.ts + Root.tsx 프레임 보정
 #   3. Gemini → 9:16 씬 이미지 생성
-#   4. Wan 2.5 I2V → 5초 비디오 생성
-#   5. ffmpeg → 10초 reverse-loop 확장
+#   4. Wan 2.5 I2V → 비디오 생성
+#      - Opening/Closing: frame-stitch (5초 클립 이어붙이기, seamless)
+#      - Body: 단일 5초 클립
+#   5. ffmpeg → Body만 10초 reverse-loop 확장
 #   6. (선택) Kling lipsync → Opening/Closing 입싱크
 #   7. Remotion → MP4 렌더링 (1080x1920)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -103,14 +105,17 @@ if [ "$RENDER_ONLY" = false ]; then
   ok "씬 이미지 생성 완료"
 
   # ── Step 4: I2V 비디오 생성 (Wan 2.5) ──
-  log "Step 4/7: I2V 비디오 생성 (Wan 2.5, 5초)"
+  log "Step 4/7: I2V 비디오 생성 (Wan 2.5)"
+  echo "  🔗 Opening/Closing: frame-stitch (5초 클립 이어붙이기)"
+  echo "  🎨 Body: 단일 5초 클립"
   npx ts-node "$SRC/generateVideos-i2v.ts"
   ok "I2V 비디오 생성 완료"
 
-  # ── Step 5: 10초 reverse-loop 확장 ──
-  log "Step 5/7: 10초 reverse-loop 확장"
+  # ── Step 5: Body 씬 reverse-loop 확장 ──
+  log "Step 5/7: Body 씬 reverse-loop 확장 (5초 → 10초)"
+  echo "  ⏭️  Opening/Closing은 Step 4에서 frame-stitch로 이미 처리됨"
   npx ts-node "$SRC/createReverseLoop.ts" 2>/dev/null || bash "$SRC/createReverseLoop.sh" 2>/dev/null || echo "  ⚠️ reverse-loop 스킵 (수동 처리 필요)"
-  ok "reverse-loop 확장 완료"
+  ok "Body reverse-loop 확장 완료"
 
   # ── Step 6: (선택) Kling lipsync (Opening/Closing) ──
   log "Step 6/7: Kling lipsync (선택사항)"
