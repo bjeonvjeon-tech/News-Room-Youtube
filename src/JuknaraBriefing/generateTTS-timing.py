@@ -27,7 +27,7 @@ import subprocess
 from typing import List, Dict, Tuple
 
 VOICE = "ko-KR-SunHiNeural"  # 여성 뉴스 앵커 목소리 (태리)
-RATE = "+20%"
+RATE = "+10%"
 VOLUME = "+0%"
 VIDEO_DURATION = 5.0  # 원본 비디오 길이 (초)
 EXTENDED_VIDEO_DURATION = 10.0  # reverse-loop 비디오 길이 (초)
